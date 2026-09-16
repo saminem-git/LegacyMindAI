@@ -1,0 +1,28 @@
+{
+  "name": "@legacymind/desktop",
+  "version": "1.0.0",
+  "description": "LegacyMind AI Desktop Application",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "build": "electron-builder"
+  },
+  "dependencies": {
+    "electron": "^32.3.3"
+  },
+  "devDependencies": {
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.legacymind.ai",
+    "productName": "LegacyMind AI",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js"
+    ]
+  }
+}

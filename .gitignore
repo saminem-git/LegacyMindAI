@@ -1,0 +1,8 @@
+.env
+*.db
+node_modules/
+dist/
+.DS_Store
+*.log
+apps/desktop/node_modules/
+apps/desktop/dist/
