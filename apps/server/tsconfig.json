@@ -1,14 +1,13 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "outDir": "dist",
-    "rootDir": "src",
-    "types": ["bun-types"],
+    "rootDir": "../..",
     "paths": {
       "@legacymind/shared": ["../../packages/shared/src/index.ts"],
       "../../../packages/shared/src/index.js": ["../../packages/shared/src/index.ts"]

@@ -1,11 +1,11 @@
-import { Hono } from 'hono';
+import { Router } from 'express';
 import { importWorkbook } from '../services/importer.js';
 import { saveWorkbookData, loadWorkbookData } from '../db/database.js';
 import path from 'path';
 
-const router = new Hono();
+const router = Router();
 
-router.post('/import', async (c) => {
+router.post('/import', async (_req, res) => {
   try {
     const xlsxPath = process.env.XLSX_PATH
       ? path.resolve(process.cwd(), process.env.XLSX_PATH)
@@ -13,22 +13,22 @@ router.post('/import', async (c) => {
 
     const data = importWorkbook(xlsxPath);
     saveWorkbookData(data);
-    return c.json({ success: true, summary: data.importSummary });
+    return res.json({ success: true, summary: data.importSummary });
   } catch (e) {
-    return c.json({ success: false, error: (e as Error).message }, 500);
+    return res.status(500).json({ success: false, error: (e as Error).message });
   }
 });
 
-router.get('/data', (c) => {
+router.get('/data', (_req, res) => {
   const data = loadWorkbookData();
-  if (!data) return c.json({ error: 'No data imported yet. POST /api/workbook/import first.' }, 404);
-  return c.json(data);
+  if (!data) return res.status(404).json({ error: 'No data imported yet. POST /api/workbook/import first.' });
+  return res.json(data);
 });
 
-router.get('/applications', (c) => {
+router.get('/applications', (_req, res) => {
   const data = loadWorkbookData();
-  if (!data) return c.json({ error: 'No data imported' }, 404);
-  return c.json(data.applications);
+  if (!data) return res.status(404).json({ error: 'No data imported' });
+  return res.json(data.applications);
 });
 
 export default router;

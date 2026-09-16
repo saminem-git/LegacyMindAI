@@ -2,7 +2,7 @@ import type {
   WorkbookData, ApplicationProfile, Finding, Recommendation,
   GraphNode, GraphEdge, Evidence, CodeModule, BusinessRule,
   DataStore, Integration, Dependency, TestCase, ModernizationItem
-} from '../../../packages/shared/src/index.js';
+} from '@legacymind/shared';
 
 // Risk scoring weights
 const WEIGHTS = {

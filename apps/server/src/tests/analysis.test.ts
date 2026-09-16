@@ -1,9 +1,30 @@
-import { describe, it, expect } from 'bun:test';
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
 import { importWorkbook } from '../services/importer.js';
 import { analyzeApplication } from '../analysis/engine.js';
 import path from 'path';
 
-const XLSX_PATH = path.resolve(import.meta.dir, '../../../../LegacyMind_Mock_Dataset.xlsx');
+const XLSX_PATH = path.resolve(process.cwd(), '../../LegacyMind_Mock_Dataset.xlsx');
+
+function expect(actual: any): any {
+  const matchers = {
+    toBe: (expected: any) => assert.strictEqual(actual, expected),
+    toBeDefined: () => assert.notStrictEqual(actual, undefined),
+    toBeTruthy: () => assert.ok(actual),
+    toBeGreaterThan: (expected: number) => assert.ok(actual > expected),
+    toBeGreaterThanOrEqual: (expected: number) => assert.ok(actual >= expected),
+    toBeLessThanOrEqual: (expected: number) => assert.ok(actual <= expected),
+    toContain: (expected: any) => assert.ok(actual.includes(expected)),
+    toThrow: () => assert.throws(actual),
+  };
+  return {
+    ...matchers,
+    not: {
+      toBe: (expected: any) => assert.notStrictEqual(actual, expected),
+      toThrow: () => assert.doesNotThrow(actual),
+    },
+  };
+}
 
 describe('XLSX Importer', () => {
   it('loads workbook and returns all required sheets', () => {

@@ -1,7 +1,6 @@
 const { app, BrowserWindow, shell } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
-const fs = require('fs');
 
 let mainWindow;
 let serverProcess;
@@ -10,26 +9,14 @@ const SERVER_PORT = 3001;
 const WEB_PORT = 5173;
 const isDev = process.env.NODE_ENV !== 'production';
 
-function findBun() {
-  const candidates = [
-    path.join(process.env.HOME || '', '.bun', 'bin', 'bun'),
-    '/usr/local/bin/bun',
-    '/usr/bin/bun',
-  ];
-  for (const c of candidates) {
-    if (fs.existsSync(c)) return c;
-  }
-  return 'bun';
-}
-
 function startBackend() {
-  const bunPath = findBun();
   const serverDir = path.join(__dirname, '..', 'server');
-  const serverEntry = path.join(serverDir, 'src', 'index.ts');
+  const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+  const serverScript = isDev ? 'dev' : 'start';
 
-  console.log(`Starting backend: ${bunPath} run ${serverEntry}`);
+  console.log(`Starting backend: ${npmCommand} run ${serverScript}`);
 
-  serverProcess = spawn(bunPath, ['run', serverEntry], {
+  serverProcess = spawn(npmCommand, ['run', serverScript], {
     cwd: serverDir,
     env: { ...process.env, PORT: String(SERVER_PORT) },
     stdio: ['ignore', 'pipe', 'pipe'],

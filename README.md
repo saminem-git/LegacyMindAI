@@ -14,8 +14,7 @@ An AI-powered legacy application modernization workspace. Turns opaque legacy di
 
 | Tool | Version | Install |
 |------|---------|---------|
-| Node.js | 20+ LTS | [nvm](https://github.com/nvm-sh/nvm) |
-| Bun | 1.4+ | `curl -fsSL https://bun.sh/install \| bash` |
+| Node.js | 22.5+ | [nvm](https://github.com/nvm-sh/nvm) |
 
 ### 1. Clone & start
 
@@ -32,8 +31,8 @@ Then open **http://localhost:5173** in your browser.
 **Terminal 1 — Backend:**
 ```bash
 cd apps/server
-bun install
-bun run src/index.ts
+npm install
+npm run dev
 ```
 
 **Terminal 2 — Frontend:**
@@ -80,11 +79,11 @@ Without a key, all deterministic analysis still works. AI only enhances document
 
 ```
 apps/
-  server/          Bun + Hono backend
+  server/          Node.js + Express backend
     src/
       analysis/    Deterministic engine (cycles, orphans, parity, risk scoring)
       ai/          LLMProvider + GeminiProvider abstraction
-      db/          SQLite via bun:sqlite
+      db/          SQLite via Node.js built-in node:sqlite
       routes/      /api/workbook, /api/analysis
       services/    XLSX importer, documentation generator
       tests/       18 unit tests
@@ -131,7 +130,7 @@ All findings are **deterministic** — derived from the dataset, never hardcoded
 
 ```bash
 cd apps/server
-bun test
+npm test
 ```
 
 18 tests covering: XLSX parsing, normalization, relationship resolution, cycle detection, orphan detection, parity evaluation, risk scoring, traceability.

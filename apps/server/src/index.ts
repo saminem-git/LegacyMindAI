@@ -1,29 +1,35 @@
-import { Hono } from 'hono';
-import { cors } from 'hono/cors';
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
 import { initDb } from './db/database.js';
 import workbookRouter from './routes/workbook.js';
 import analysisRouter from './routes/analysis.js';
 import path from 'path';
 
-const app = new Hono();
+const app = express();
 
 // Init DB
 const dbPath = process.env.DB_PATH ?? path.resolve(process.cwd(), 'legacymind.db');
 initDb(dbPath);
 
-app.use('*', cors({ origin: '*' }));
+app.use(cors({ origin: '*' }));
+app.use(express.json());
 
-app.get('/health', (c) => c.json({ status: 'ok', time: new Date().toISOString() }));
+app.get('/health', (_req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 
-app.route('/api/workbook', workbookRouter);
-app.route('/api/analysis', analysisRouter);
+app.use('/api/workbook', workbookRouter);
+app.use('/api/analysis', analysisRouter);
 
-app.onError((err, c) => {
+app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('Unhandled error:', err);
-  return c.json({ error: err.message }, 500);
+  return res.status(500).json({ error: err.message });
 });
 
 const port = Number(process.env.PORT ?? 3001);
 console.log(`LegacyMind AI server starting on port ${port}`);
 
-export default { port, fetch: app.fetch };
+app.listen(port, () => {
+  console.log(`LegacyMind AI server listening on port ${port}`);
+});
+
+export default app;

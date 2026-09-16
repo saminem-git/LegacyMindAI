@@ -1,20 +1,20 @@
-import { Hono } from 'hono';
+import { Router } from 'express';
 import { loadWorkbookData, saveAnalysisResult, loadAnalysisResult, listAnalysisResults } from '../db/database.js';
 import { analyzeApplication, buildGraph } from '../analysis/engine.js';
 import { generateFunctionalDoc, generateProcessFlow } from '../services/docgen.js';
 import { createLLMProvider } from '../ai/provider.js';
 import { generateAISummary, generateAITestScenarios, generateAIDocumentation } from '../ai/assistant.js';
-import type { AnalysisResult } from '../../../packages/shared/src/index.js';
+import type { AnalysisResult } from '@legacymind/shared';
 
-const router = new Hono();
+const router = Router();
 
-router.post('/:appId', async (c) => {
-  const appId = c.req.param('appId');
+router.post('/:appId', async (req, res) => {
+  const appId = req.params.appId;
   const data = loadWorkbookData();
-  if (!data) return c.json({ error: 'No workbook data. Import first.' }, 400);
+  if (!data) return res.status(400).json({ error: 'No workbook data. Import first.' });
 
   const app = data.applications.find(a => a.app_id === appId);
-  if (!app) return c.json({ error: `Application ${appId} not found` }, 404);
+  if (!app) return res.status(404).json({ error: `Application ${appId} not found` });
 
   try {
     const profile = analyzeApplication(appId, data);
@@ -56,22 +56,22 @@ router.post('/:appId', async (c) => {
 
     saveAnalysisResult(result);
 
-    return c.json({ success: true, result, aiSummary, aiTestScenarios });
+    return res.json({ success: true, result, aiSummary, aiTestScenarios });
   } catch (e) {
     console.error('Analysis error:', e);
-    return c.json({ error: (e as Error).message }, 500);
+    return res.status(500).json({ error: (e as Error).message });
   }
 });
 
-router.get('/:appId', (c) => {
-  const appId = c.req.param('appId');
+router.get('/:appId', (req, res) => {
+  const appId = req.params.appId;
   const result = loadAnalysisResult(appId);
-  if (!result) return c.json({ error: `No analysis found for ${appId}` }, 404);
-  return c.json(result);
+  if (!result) return res.status(404).json({ error: `No analysis found for ${appId}` });
+  return res.json(result);
 });
 
-router.get('/', (c) => {
-  return c.json(listAnalysisResults());
+router.get('/', (_req, res) => {
+  return res.json(listAnalysisResults());
 });
 
 export default router;

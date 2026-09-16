@@ -1,4 +1,4 @@
-import type { ApplicationProfile, GeneratedDocument, Evidence } from '../../../packages/shared/src/index.js';
+import type { ApplicationProfile, GeneratedDocument, Evidence } from '@legacymind/shared';
 
 function ev(sheet: string, recordId: string, field?: string): Evidence {
   return { sheet, recordId, field };

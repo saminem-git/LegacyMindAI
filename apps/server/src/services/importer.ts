@@ -3,7 +3,7 @@ import type {
   WorkbookData, Application, CodeModule, BusinessRule, DataStore,
   Integration, Dependency, TestCase, ModernizationItem, DocumentationArtifact,
   ImportSummary
-} from '../../../packages/shared/src/index.js';
+} from '@legacymind/shared';
 
 const REQUIRED_SHEETS = [
   'Applications', 'Code_Modules', 'Business_Rules', 'Data_Stores',

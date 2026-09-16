@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # LegacyMind AI - Start Script
-# Launches backend (Bun/Hono) + frontend (Vite) for demo
+# Launches backend (Node/Express) + frontend (Vite) for demo
 
 set -e
 
@@ -12,21 +12,12 @@ WEB_DIR="$ROOT/apps/web"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh" && nvm use --lts 2>/dev/null || true
 
-# Add bun to PATH
-export PATH="$HOME/.bun/bin:$PATH"
-
 echo ""
 echo "╔══════════════════════════════════════════╗"
 echo "║         LegacyMind AI - Starting         ║"
 echo "║  Understand. Prove. Modernize.           ║"
 echo "╚══════════════════════════════════════════╝"
 echo ""
-
-# Check bun
-if ! command -v bun &>/dev/null; then
-  echo "ERROR: bun not found. Install from https://bun.sh"
-  exit 1
-fi
 
 # Check node
 if ! command -v node &>/dev/null; then
@@ -37,7 +28,7 @@ fi
 # Install server deps if needed
 if [ ! -d "$SERVER_DIR/node_modules" ]; then
   echo "Installing server dependencies..."
-  cd "$SERVER_DIR" && bun install
+  cd "$SERVER_DIR" && npm install
 fi
 
 # Install web deps if needed
@@ -52,7 +43,7 @@ lsof -ti:5173 | xargs kill -9 2>/dev/null || true
 sleep 1
 
 echo "Starting backend on http://localhost:3001 ..."
-cd "$SERVER_DIR" && bun run src/index.ts &
+cd "$SERVER_DIR" && npm run dev &
 SERVER_PID=$!
 
 sleep 2

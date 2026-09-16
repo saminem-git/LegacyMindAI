@@ -1,4 +1,4 @@
-import type { ApplicationProfile } from '../../../packages/shared/src/index.js';
+import type { ApplicationProfile } from '@legacymind/shared';
 import type { LLMProvider } from './provider.js';
 
 interface AISummary {
