@@ -65,7 +65,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             </div>
             {!collapsed && <div>
               <div className="text-sm font-bold text-white leading-tight">LegacyMind AI</div>
-              <div className="text-[11px] text-gray-500">Modernization intelligence</div>
+              <div className="text-[11px] text-gray-700">Modernization intelligence</div>
             </div>}
           </div>
         </div>
@@ -93,7 +93,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
         <div className="p-3 border-t border-gray-800 text-xs text-gray-600 text-center">
           {!collapsed && 'Evidence before replacement'}
-          <button type="button" onClick={toggleSidebar} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="hidden md:flex mx-auto mt-2 items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-800 text-gray-500">
+          <button type="button" onClick={toggleSidebar} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="hidden md:flex mx-auto mt-2 items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-800 text-gray-700">
             {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
           </button>
         </div>
@@ -106,26 +106,26 @@ export default function Layout({ children }: { children: ReactNode }) {
           <button type="button" aria-label="Open navigation" onClick={() => setMobileOpen(true)} className="md:hidden w-9 h-9 inline-flex items-center justify-center rounded-lg hover:bg-gray-800"><Menu size={18} /></button>
           {/* App selector */}
           <div className="flex items-center gap-2 min-w-0">
-            <Database size={14} className="text-gray-500" />
+            <Database size={14} className="text-gray-700" />
             {workbookData ? (
               <div className="relative group">
                 <button aria-label="Select application" className="flex items-center gap-1.5 text-sm text-gray-300 hover:text-white bg-gray-800 px-2.5 py-2 rounded-lg border border-gray-700 max-w-[42vw]">
                   {selectedApp ? (
-                    <><span className="text-blue-400 font-medium">{selectedApp.app_name}</span><span className="text-gray-500 text-xs">({selectedApp.app_id})</span></>
+                    <><span className="text-emerald-800 font-medium">{selectedApp.app_name}</span><span className="text-gray-800 text-xs">({selectedApp.app_id})</span></>
                   ) : (
-                    <span className="text-gray-500">Select Application</span>
+                    <span className="text-gray-700">Select Application</span>
                   )}
-                  <ChevronDown size={12} className="text-gray-500" />
+                  <ChevronDown size={12} className="text-gray-800" />
                 </button>
-                <div className="absolute top-full left-0 mt-1 w-64 bg-gray-800 border border-gray-700 rounded shadow-xl z-50 hidden group-hover:block">
+                <div className="absolute top-full left-0 mt-.5 w-64 bg-gray-800 border border-gray-700 rounded shadow-xl z-50 hidden group-hover:block">
                   {workbookData.applications.map(app => (
                     <button
                       key={app.app_id}
                       onClick={() => { selectApp(app); navigate('/'); }}
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-700 flex items-center justify-between"
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-300 flex items-center justify-between"
                     >
-                      <span className="text-gray-200">{app.app_name}</span>
-                      <span className="text-xs text-gray-500">{app.app_id}</span>
+                      <span className="text-gray-900">{app.app_name}</span>
+                      <span className="text-xs text-gray-700">{app.app_id}</span>
                     </button>
                   ))}
                 </div>
@@ -156,7 +156,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isImporting}
-            className="hidden sm:flex items-center gap-1.5 text-xs px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg border border-gray-600 disabled:opacity-50"
+            className="hidden sm:flex items-center gap-1.5 text-xs text-gray-900 px-3 py-2 bg-gray-700 hover:bg-gray-600 hover:text-emerald-800 rounded-lg border border-gray-600 disabled:opacity-50"
           >
             {isImporting ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
             {isImporting ? 'Importing...' : 'Import Dataset'}

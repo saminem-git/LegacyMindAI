@@ -11,8 +11,8 @@ export default function Traceability() {
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState<'findings' | 'recommendations' | 'tests'>('findings');
 
-  if (!selectedApp) return <div className="p-8 text-center text-gray-500">Select an application.</div>;
-  if (!analysisResult) return <div className="p-8 text-center text-gray-500">Run analysis to view traceability.</div>;
+  if (!selectedApp) return <div className="p-8 text-center text-gray-700">Select an application.</div>;
+  if (!analysisResult) return <div className="p-8 text-center text-gray-700">Run analysis to view traceability.</div>;
 
   const { profile } = analysisResult;
   const [params] = useSearchParams();
@@ -38,10 +38,10 @@ export default function Traceability() {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2"><h1 className="text-2xl font-bold text-[var(--color-primary)]">Traceability: {selectedApp.app_name}</h1><InfoTooltip text="Traceability connects findings, recommendations, and tests back to the source records that support them." /></div>
-          <p className="text-xs text-gray-500 mt-0.5">Every finding, recommendation, and test traced back to source evidence.</p>
+          <p className="text-xs text-gray-700 mt-0.5">Every finding, recommendation, and test traced back to source evidence.</p>
         </div>
         <div className="relative">
-          <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500" />
+          <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-700" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -62,7 +62,7 @@ export default function Traceability() {
           <button
             key={key}
             onClick={() => setActiveTab(key)}
-            className={`px-4 py-2 text-sm border-b-2 transition-colors ${activeTab === key ? 'border-blue-500 text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
+            className={`px-4 py-2 text-sm border-b-2 transition-colors ${activeTab === key ? 'border-blue-500 text-emerald-800' : 'border-transparent text-gray-700 hover:text-gray-300'}`}
           >
             {label}
           </button>
@@ -82,11 +82,11 @@ export default function Traceability() {
                     <span className="text-xs text-gray-600">{f.type.replace(/_/g, ' ')}</span>
                   </div>
                   <p className="text-sm font-medium text-gray-200">{f.title}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{f.description}</p>
+                  <p className="text-xs text-gray-700 mt-0.5">{f.description}</p>
                 </div>
               </div>
               <div className="border-t border-gray-800 pt-3">
-                <div className="text-xs text-gray-500 mb-2 font-medium">↓ Source Evidence</div>
+                <div className="text-xs text-gray-700 mb-2 font-medium">↓ Source Evidence</div>
                 <EvidencePanel evidence={f.evidence} />
               </div>
               {(f.moduleIds?.length ?? 0) > 0 && (
@@ -114,11 +114,11 @@ export default function Traceability() {
                     <span className="text-xs text-gray-600">{r.roadmapPhase}</span>
                   </div>
                   <p className="text-sm font-medium text-gray-200">{r.title}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{r.rationale}</p>
+                  <p className="text-xs text-gray-700 mt-0.5">{r.rationale}</p>
                 </div>
               </div>
               <div className="border-t border-gray-800 pt-3">
-                <div className="text-xs text-gray-500 mb-2 font-medium">↓ Source Evidence</div>
+                <div className="text-xs text-gray-700 mb-2 font-medium">↓ Source Evidence</div>
                 <EvidencePanel evidence={r.evidence} />
               </div>
               {r.relatedModules.length > 0 && (
@@ -154,7 +154,7 @@ export default function Traceability() {
                     <span className="text-xs text-gray-600">{t.test_type}</span>
                   </div>
                   <p className="text-sm font-medium text-gray-200">{t.test_name}</p>
-                  <div className="flex gap-4 mt-1 text-xs text-gray-500">
+                  <div className="flex gap-4 mt-1 text-xs text-gray-700">
                     <span>Rule: <span className="text-purple-400 font-mono">{t.rule_id}</span></span>
                     <span>Module: <span className="text-green-400 font-mono">{t.module_id}</span></span>
                     <span>Expected: <span className="text-gray-300">{t.expected_result}</span></span>
@@ -163,7 +163,7 @@ export default function Traceability() {
                 </div>
               </div>
               <div className="border-t border-gray-800 pt-3">
-                <div className="text-xs text-gray-500 mb-2 font-medium">↓ Source Evidence</div>
+                <div className="text-xs text-gray-700 mb-2 font-medium">↓ Source Evidence</div>
                 <EvidencePanel evidence={[
                   { sheet: 'Test_Cases', recordId: t.test_id, field: 'parity_status', value: t.parity_status },
                   { sheet: 'Test_Cases', recordId: t.test_id, field: 'expected_result', value: t.expected_result },

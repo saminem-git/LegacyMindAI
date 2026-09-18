@@ -76,8 +76,8 @@ export default function Dependencies() {
   const [selectedEdge, setSelectedEdge] = useState<GraphEdge | null>(null);
   const [filter, setFilter] = useState<'all' | 'orphan' | 'cycle' | 'critical'>('all');
 
-  if (!selectedApp) return <div className="p-8 text-center text-gray-500">Select an application.</div>;
-  if (!analysisResult) return <div className="p-8 text-center text-gray-500">Run analysis to view dependency graph.</div>;
+  if (!selectedApp) return <div className="p-8 text-center text-gray-700">Select an application.</div>;
+  if (!analysisResult) return <div className="p-8 text-center text-gray-700">Run analysis to view dependency graph.</div>;
 
   const { profile, graphNodes, graphEdges } = analysisResult;
 
@@ -135,7 +135,7 @@ export default function Dependencies() {
       <div className="flex-1 flex flex-col">
         {/* Controls */}
         <div className="p-3 border-b border-gray-800 flex items-center gap-3 flex-wrap">
-          <span className="text-xs text-gray-500 font-medium flex items-center gap-1">Filter: <InfoTooltip text="Filter the deterministic relationship graph to focus on orphan, cyclic, or runtime-critical connections." /></span>
+          <span className="text-xs text-gray-700 font-medium flex items-center gap-1">Filter: <InfoTooltip text="Filter the deterministic relationship graph to focus on orphan, cyclic, or runtime-critical connections." /></span>
           {(['all', 'orphan', 'cycle', 'critical'] as const).map(f => (
             <button
               key={f}
@@ -146,7 +146,7 @@ export default function Dependencies() {
             </button>
           ))}
           <div className="flex-1" />
-          <div className="flex gap-4 text-xs text-gray-500">
+          <div className="flex gap-4 text-xs text-gray-700">
             <span>Total: <span className="text-white">{totalDeps}</span></span>
             <span>Runtime Critical: <span className="text-orange-400">{runtimeCritical}</span></span>
             <span>Orphans: <span className="text-red-400">{orphanFindings.length}</span></span>
@@ -190,26 +190,26 @@ export default function Dependencies() {
       {/* Detail panel */}
       {(selectedNode || selectedEdge) && (
         <div className="w-72 border-l border-gray-800 bg-gray-900 p-4 overflow-y-auto">
-          <button className="text-xs text-gray-500 mb-3 hover:text-gray-300" onClick={() => { setSelectedNode(null); setSelectedEdge(null); }}>✕ Close</button>
+          <button className="text-xs text-gray-700 mb-3 hover:text-gray-300" onClick={() => { setSelectedNode(null); setSelectedEdge(null); }}>✕ Close</button>
 
           {selectedNode && (
             <div className="space-y-3">
               <AIInsightCard appId={selectedApp.app_id} intent="dependencies" entityId={selectedNode.id} title="AI Dependency Interpretation" compact />
               <div>
-                <div className="text-xs text-gray-500">Type</div>
+                <div className="text-xs text-gray-700">Type</div>
                 <div className="text-sm font-medium text-white">{selectedNode.type}</div>
               </div>
               <div>
-                <div className="text-xs text-gray-500">ID</div>
+                <div className="text-xs text-gray-700">ID</div>
                 <div className="text-sm font-mono text-blue-400">{selectedNode.id}</div>
               </div>
               <div>
-                <div className="text-xs text-gray-500">Label</div>
+                <div className="text-xs text-gray-700">Label</div>
                 <div className="text-sm text-gray-200">{selectedNode.label}</div>
               </div>
               {selectedNode.data !== undefined && (
                 <div>
-                  <div className="text-xs text-gray-500 mb-1">Details</div>
+                  <div className="text-xs text-gray-700 mb-1">Details</div>
                   <pre className="text-xs text-gray-400 bg-gray-950 rounded p-2 overflow-auto max-h-48 whitespace-pre-wrap">
                     {JSON.stringify(selectedNode.data as Record<string, unknown>, null, 2)}
                   </pre>
@@ -232,16 +232,16 @@ export default function Dependencies() {
             <div className="space-y-3">
               <AIInsightCard appId={selectedApp.app_id} intent="dependencies" entityId={selectedEdge.source} title="AI Dependency Interpretation" compact />
               <div>
-                <div className="text-xs text-gray-500">Edge Type</div>
+                <div className="text-xs text-gray-700">Edge Type</div>
                 <div className="text-sm font-medium text-white">{selectedEdge.type}</div>
               </div>
               <div>
-                <div className="text-xs text-gray-500">Source → Target</div>
+                <div className="text-xs text-gray-700">Source → Target</div>
                 <div className="text-sm font-mono text-blue-400">{selectedEdge.source} → {selectedEdge.target}</div>
               </div>
               {selectedEdge.data !== undefined && (
                 <div>
-                  <div className="text-xs text-gray-500 mb-1">Dependency Record</div>
+                  <div className="text-xs text-gray-700 mb-1">Dependency Record</div>
                   <pre className="text-xs text-gray-400 bg-gray-950 rounded p-2 overflow-auto max-h-48 whitespace-pre-wrap">
                     {JSON.stringify(selectedEdge.data as Record<string, unknown>, null, 2)}
                   </pre>

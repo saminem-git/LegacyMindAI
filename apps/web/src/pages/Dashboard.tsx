@@ -36,7 +36,7 @@ export default function Dashboard() {
       <div className="flex items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2"><h1 className="text-2xl font-bold text-[var(--color-primary)]">Overview</h1><InfoTooltip text="A decision-support summary of the selected application's evidence, risks, tests, and modernization priorities." /></div>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <p className="text-sm text-gray-700 mt-0.5">
             {selectedApp ? `Analysis for ${selectedApp.app_name}` : 'Select an application to begin analysis'}
           </p>
         </div>
@@ -71,7 +71,7 @@ export default function Dashboard() {
           {/* Critical findings */}
           {profile.findings.filter(f => f.severity === 'CRITICAL' || f.severity === 'HIGH').length > 0 && (
             <div>
-              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Critical Findings</h2>
+              <h2 className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Critical Findings</h2>
               <div className="space-y-2">
                 {profile.findings
                   .filter(f => f.severity === 'CRITICAL' || f.severity === 'HIGH')
@@ -82,10 +82,10 @@ export default function Dashboard() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <SeverityBadge s={f.severity} />
-                          <span className="text-xs text-gray-500">{f.type.replace(/_/g, ' ')}</span>
+                          <span className="text-xs text-gray-700">{f.type.replace(/_/g, ' ')}</span>
                         </div>
                         <p className="text-sm text-gray-200 mt-1">{f.title}</p>
-                        <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{f.description}</p>
+                        <p className="text-xs text-gray-700 mt-0.5 line-clamp-2">{f.description}</p>
                         {f.evidence[0] && (
                           <p className="text-xs text-blue-500 mt-1">
                             Source: {f.evidence[0].sheet} → {f.evidence[0].recordId}
@@ -102,7 +102,7 @@ export default function Dashboard() {
           {/* Top recommendations */}
           {profile.recommendations.length > 0 && (
             <div>
-              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Top Modernization Priorities</h2>
+              <h2 className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Top Modernization Priorities</h2>
               <div className="space-y-2">
                 {profile.recommendations.slice(0, 4).map(r => (
                   <div key={r.id} className="bg-gray-900 border border-gray-800 rounded-lg p-3 flex items-start gap-3">
@@ -110,11 +110,11 @@ export default function Dashboard() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <SeverityBadge s={r.priority} />
-                        <span className="text-xs text-gray-500">{r.roadmapPhase}</span>
+                        <span className="text-xs text-gray-700">{r.roadmapPhase}</span>
                         <span className="text-xs text-gray-600">Risk score: {r.riskScore}</span>
                       </div>
                       <p className="text-sm text-gray-200 mt-1">{r.title}</p>
-                      <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{r.rationale}</p>
+                      <p className="text-xs text-gray-700 mt-0.5 line-clamp-1">{r.rationale}</p>
                     </div>
                   </div>
                 ))}
@@ -146,7 +146,7 @@ export default function Dashboard() {
 
       {!selectedApp && (
         <div className="bg-gray-900 border border-dashed border-gray-700 rounded-lg p-6 text-center">
-          <p className="text-gray-500 text-sm">Select an application from the top bar to begin analysis.</p>
+          <p className="text-gray-700 text-sm">Select an application from the top bar to begin analysis.</p>
           <div className="mt-3 flex flex-wrap gap-2 justify-center">
             {workbookData.applications.map(a => (
               <span key={a.app_id} className="text-xs bg-gray-800 text-gray-400 px-2 py-1 rounded border border-gray-700">

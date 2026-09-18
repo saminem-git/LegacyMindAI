@@ -30,7 +30,7 @@ function ModuleRow({ m }: { m: ReturnType<typeof useApp>['analysisResult'] exten
   return (
     <>
       <tr
-        className="border-b border-gray-800 hover:bg-gray-900/50 cursor-pointer"
+        className="border-b border-gray-800 hover:bg-gray-300/50 cursor-pointer"
         onClick={() => setOpen(o => !o)}
       >
         <td className="px-3 py-2 text-xs text-gray-400">{open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}</td>
@@ -47,7 +47,7 @@ function ModuleRow({ m }: { m: ReturnType<typeof useApp>['analysisResult'] exten
           {m.has_unit_tests ? <span className="text-green-400 text-xs">✓</span> : <span className="text-red-400 text-xs">✗</span>}
         </td>
         <td className="px-3 py-2 text-center">
-          {m.is_dead_code ? <span className="text-gray-500 text-xs">💀</span> : <span className="text-gray-700 text-xs">—</span>}
+          {m.is_dead_code ? <span className="text-gray-700 text-xs">💀</span> : <span className="text-gray-700 text-xs">—</span>}
         </td>
         <td className="px-3 py-2 text-center">
           {m.description_present ? <span className="text-green-400 text-xs">✓</span> : <span className="text-yellow-400 text-xs">✗</span>}
@@ -74,10 +74,10 @@ export default function Understand() {
   const [expandedFinding, setExpandedFinding] = useState<string | null>(null);
 
   if (!selectedApp) {
-    return <div className="p-8 text-center text-gray-500">Select an application to view understanding.</div>;
+    return <div className="p-8 text-center text-gray-700">Select an application to view understanding.</div>;
   }
   if (!analysisResult) {
-    return <div className="p-8 text-center text-gray-500">Run analysis to generate application understanding.</div>;
+    return <div className="p-8 text-center text-gray-700">Run analysis to generate application understanding.</div>;
   }
 
   const { profile } = analysisResult;
@@ -111,8 +111,8 @@ export default function Understand() {
           { label: 'Maint. Cost', value: `€${app.annual_maint_cost_eur.toLocaleString()}` },
         ].map(({ label, value }) => (
           <div key={label} className="bg-gray-900 border border-gray-800 rounded-lg p-3">
-            <div className="text-xs text-gray-500">{label}</div>
-            <div className="text-sm font-medium text-white mt-0.5">{value}</div>
+            <div className="text-xs text-gray-800">{label}</div>
+            <div className="text-sm font-medium text-gray-800 mt-0.5">{value}</div>
           </div>
         ))}
       </div>
@@ -128,8 +128,8 @@ export default function Understand() {
           { label: 'Critical Findings', value: metrics.criticalFindings },
         ].map(({ label, value }) => (
           <div key={label} className="bg-gray-900 border border-gray-800 rounded-lg p-3 text-center">
-            <div className="text-xl font-bold text-white">{value}</div>
-            <div className="text-xs text-gray-500 mt-0.5">{label}</div>
+            <div className="text-xl font-bold text-gray-800">{value}</div>
+            <div className="text-xs text-gray-700 mt-0.5">{label}</div>
           </div>
         ))}
       </div>
@@ -146,10 +146,10 @@ export default function Understand() {
                   onClick={() => setExpandedFinding(expandedFinding === f.id ? null : f.id)}
                 >
                   <SeverityBadge s={f.severity} />
-                  <span className="text-xs text-gray-500 font-mono">{f.type.replace(/_/g, ' ')}</span>
+                  <span className="text-xs text-gray-700 font-mono">{f.type.replace(/_/g, ' ')}</span>
                   <span className="text-sm text-gray-200 flex-1">{f.title}</span>
                   <span className="text-xs text-gray-600">{f.confidence}</span>
-                  {expandedFinding === f.id ? <ChevronDown size={12} className="text-gray-500" /> : <ChevronRight size={12} className="text-gray-500" />}
+                  {expandedFinding === f.id ? <ChevronDown size={12} className="text-gray-700" /> : <ChevronRight size={12} className="text-gray-700" />}
                 </button>
                 {expandedFinding === f.id && (
                   <div className="px-4 pb-3 border-t border-gray-800">
@@ -169,7 +169,7 @@ export default function Understand() {
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-gray-300">Module Inventory ({modules.length})</h2>
           <div className="relative">
-            <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500" />
+            <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-700" />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -181,7 +181,7 @@ export default function Understand() {
         <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-800 text-xs text-gray-500">
+              <tr className="border-b border-gray-800 text-xs text-gray-700">
                 <th className="px-3 py-2 w-6" />
                 <th className="px-3 py-2 text-left">ID</th>
                 <th className="px-3 py-2 text-left">Name</th>
@@ -208,7 +208,7 @@ export default function Understand() {
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-gray-300">Business Rules ({businessRules.length})</h2>
           <div className="relative">
-            <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500" />
+            <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-700" />
             <input
               value={ruleSearch}
               onChange={e => setRuleSearch(e.target.value)}
@@ -220,7 +220,7 @@ export default function Understand() {
         <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-800 text-xs text-gray-500">
+              <tr className="border-b border-gray-800 text-xs text-gray-700">
                 <th className="px-3 py-2 text-left">Rule ID</th>
                 <th className="px-3 py-2 text-left">Summary</th>
                 <th className="px-3 py-2 text-left">Domain</th>
@@ -232,7 +232,7 @@ export default function Understand() {
             </thead>
             <tbody>
               {filteredRules.map(r => (
-                <tr key={r.rule_id} className="border-b border-gray-800 hover:bg-gray-900/50">
+                <tr key={r.rule_id} className="border-b border-gray-800 hover:bg-gray-300/50">
                   <td className="px-3 py-2 text-xs font-mono text-blue-400">{r.rule_id}</td>
                   <td className="px-3 py-2 text-xs text-gray-300 max-w-xs">{r.rule_summary}</td>
                   <td className="px-3 py-2 text-xs text-gray-400">{r.business_domain}</td>

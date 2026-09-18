@@ -27,15 +27,15 @@ export default function Architecture() {
     const { selectedApp, analysisResult } = useApp();
     const [mode, setMode] = useState<AIViewMode>('executive');
 
-    if (!selectedApp) return <div className="p-8 text-center text-gray-500">Select an application to view architecture.</div>;
-    if (!analysisResult) return <div className="p-8 text-center text-gray-500">Run analysis to view architecture.</div>;
+    if (!selectedApp) return <div className="p-8 text-center text-gray-700">Select an application to view architecture.</div>;
+    if (!analysisResult) return <div className="p-8 text-center text-gray-700">Run analysis to view architecture.</div>;
 
     const { profile, graphNodes, graphEdges } = analysisResult;
     const typeCounts = graphNodes.reduce<Record<string, number>>((counts, node) => ({ ...counts, [node.type]: (counts[node.type] ?? 0) + 1 }), {});
 
     return <div className="p-6 space-y-6">
         <div className="flex items-start justify-between gap-4">
-            <div><div className="flex items-center gap-2"><h1 className="text-2xl font-bold text-[var(--color-primary)]">Architecture: {selectedApp.app_name}</h1><InfoTooltip text="This view explains how LegacyMind moves from legacy data to evidence-backed modernization decisions." /></div><p className="text-sm text-gray-500 mt-1">How LegacyMind turns discovery evidence into explainable modernization guidance.</p></div>
+            <div><div className="flex items-center gap-2"><h1 className="text-2xl font-bold text-[var(--color-primary)]">Architecture: {selectedApp.app_name}</h1><InfoTooltip text="This view explains how LegacyMind moves from legacy data to evidence-backed modernization decisions." /></div><p className="text-sm text-gray-700 mt-1">How LegacyMind turns discovery evidence into explainable modernization guidance.</p></div>
             <div className="inline-flex border border-[var(--color-border)] rounded-lg overflow-hidden" aria-label="Architecture view"><button type="button" onClick={() => setMode('technical')} className={`text-xs px-3 py-1.5 font-medium ${mode === 'technical' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-slate-500'}`}>Technical</button><button type="button" onClick={() => setMode('executive')} className={`text-xs px-3 py-1.5 font-medium ${mode === 'executive' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-slate-500'}`}>Executive</button></div>
         </div>
 

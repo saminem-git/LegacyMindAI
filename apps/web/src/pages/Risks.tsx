@@ -22,8 +22,8 @@ export default function Risks() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [activeGroup, setActiveGroup] = useState<string>('all');
 
-  if (!selectedApp) return <div className="p-8 text-center text-gray-500">Select an application.</div>;
-  if (!analysisResult) return <div className="p-8 text-center text-gray-500">Run analysis to view risks.</div>;
+  if (!selectedApp) return <div className="p-8 text-center text-gray-700">Select an application.</div>;
+  if (!analysisResult) return <div className="p-8 text-center text-gray-700">Run analysis to view risks.</div>;
 
   const { findings } = analysisResult.profile;
 
@@ -44,14 +44,14 @@ export default function Risks() {
           const count = findings.filter(f => f.severity === s).length;
           return (
             <div key={s} className="bg-gray-900 border border-gray-800 rounded-lg p-3 text-center">
-              <div className="text-xl font-bold text-white">{count}</div>
+              <div className="text-xl font-bold text-gray-800">{count}</div>
               <SeverityBadge s={s} />
             </div>
           );
         })}
         <div className="bg-gray-900 border border-gray-800 rounded-lg p-3 text-center col-span-2">
-          <div className="text-xl font-bold text-white">{findings.length}</div>
-          <div className="text-xs text-gray-500">Total Findings</div>
+          <div className="text-xl font-bold text-gray-800">{findings.length}</div>
+          <div className="text-xs text-gray-700">Total Findings</div>
         </div>
       </div>
 
@@ -92,19 +92,19 @@ export default function Risks() {
               <SeverityBadge s={f.severity} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-xs text-gray-500 font-mono">{f.type.replace(/_/g, ' ')}</span>
+                  <span className="text-xs text-gray-700 font-mono">{f.type.replace(/_/g, ' ')}</span>
                   <span className="text-xs text-gray-600">Confidence: {f.confidence}</span>
                 </div>
                 <p className="text-sm text-gray-200">{f.title}</p>
               </div>
-              {expanded === f.id ? <ChevronDown size={12} className="text-gray-500 shrink-0 mt-1" /> : <ChevronRight size={12} className="text-gray-500 shrink-0 mt-1" />}
+              {expanded === f.id ? <ChevronDown size={12} className="text-gray-700 shrink-0 mt-1" /> : <ChevronRight size={12} className="text-gray-700 shrink-0 mt-1" />}
             </button>
             {expanded === f.id && (
               <div className="px-4 pb-4 border-t border-gray-800 pt-3 space-y-3">
                 <p className="text-sm text-gray-400">{f.description}</p>
                 {f.moduleIds && f.moduleIds.length > 0 && (
                   <div>
-                    <div className="text-xs text-gray-500 mb-1">Affected Modules</div>
+                    <div className="text-xs text-gray-700 mb-1">Affected Modules</div>
                     <div className="flex flex-wrap gap-1">
                       {f.moduleIds.map(m => <span key={m} className="text-xs font-mono bg-gray-800 text-green-400 px-1.5 py-0.5 rounded">{m}</span>)}
                     </div>
@@ -112,14 +112,14 @@ export default function Risks() {
                 )}
                 {f.ruleIds && f.ruleIds.length > 0 && (
                   <div>
-                    <div className="text-xs text-gray-500 mb-1">Affected Rules</div>
+                    <div className="text-xs text-gray-700 mb-1">Affected Rules</div>
                     <div className="flex flex-wrap gap-1">
                       {f.ruleIds.map(r => <span key={r} className="text-xs font-mono bg-gray-800 text-purple-400 px-1.5 py-0.5 rounded">{r}</span>)}
                     </div>
                   </div>
                 )}
                 <div>
-                  <div className="text-xs text-gray-500 mb-1">Evidence</div>
+                  <div className="text-xs text-gray-700 mb-1">Evidence</div>
                   <EvidencePanel evidence={f.evidence} />
                 </div>
                 <WhyButton appId={selectedApp.app_id} intent="risks" entityId={f.id} />

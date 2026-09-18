@@ -20,34 +20,34 @@ function RecCard({ rec, appId }: { rec: Recommendation; appId: string }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-1">
             <SeverityBadge s={rec.priority} />
-            <span className="text-xs text-gray-500 bg-gray-800 px-1.5 py-0.5 rounded">{rec.roadmapPhase}</span>
+            <span className="text-xs text-gray-700 bg-gray-800 px-1.5 py-0.5 rounded">{rec.roadmapPhase}</span>
             <span className="text-xs text-gray-600">Risk score: {rec.riskScore}</span>
             <span className={`text-xs ${contColors[rec.continuityRisk]}`}>Continuity: {rec.continuityRisk}</span>
           </div>
           <p className="text-sm font-medium text-gray-200">{rec.title}</p>
-          <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{rec.rationale}</p>
+          <p className="text-xs text-gray-700 mt-0.5 line-clamp-2">{rec.rationale}</p>
         </div>
-        {open ? <ChevronDown size={14} className="text-gray-500 shrink-0" /> : <ChevronRight size={14} className="text-gray-500 shrink-0" />}
+        {open ? <ChevronDown size={14} className="text-gray-700 shrink-0" /> : <ChevronRight size={14} className="text-gray-700 shrink-0" />}
       </button>
       {open && (
         <div className="px-4 pb-4 border-t border-gray-800 space-y-3 pt-3">
           <div>
-            <div className="text-xs text-gray-500 mb-1">Description</div>
+            <div className="text-xs text-gray-700 mb-1">Description</div>
             <p className="text-sm text-gray-300">{rec.description}</p>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <div className="text-xs text-gray-500 mb-1">Risk</div>
+              <div className="text-xs text-gray-700 mb-1">Risk</div>
               <p className="text-xs text-gray-400">{rec.risk}</p>
             </div>
             <div>
-              <div className="text-xs text-gray-500 mb-1">Continuity Impact</div>
+              <div className="text-xs text-gray-700 mb-1">Continuity Impact</div>
               <p className={`text-xs font-medium ${contColors[rec.continuityRisk]}`}>{rec.continuityRisk}</p>
             </div>
           </div>
           {rec.relatedModules.length > 0 && (
             <div>
-              <div className="text-xs text-gray-500 mb-1">Affected Modules</div>
+              <div className="text-xs text-gray-700 mb-1">Affected Modules</div>
               <div className="flex flex-wrap gap-1">
                 {rec.relatedModules.map(m => <span key={m} className="text-xs font-mono bg-gray-800 text-green-400 px-1.5 py-0.5 rounded">{m}</span>)}
               </div>
@@ -55,14 +55,14 @@ function RecCard({ rec, appId }: { rec: Recommendation; appId: string }) {
           )}
           {rec.relatedRules.length > 0 && (
             <div>
-              <div className="text-xs text-gray-500 mb-1">Affected Rules</div>
+              <div className="text-xs text-gray-700 mb-1">Affected Rules</div>
               <div className="flex flex-wrap gap-1">
                 {rec.relatedRules.map(r => <span key={r} className="text-xs font-mono bg-gray-800 text-purple-400 px-1.5 py-0.5 rounded">{r}</span>)}
               </div>
             </div>
           )}
           <div>
-            <div className="text-xs text-gray-500 mb-1">Evidence</div>
+            <div className="text-xs text-gray-700 mb-1">Evidence</div>
             <EvidencePanel evidence={rec.evidence} />
           </div>
           <WhyButton appId={appId} intent="modernization" entityId={rec.id} label="Explain this recommendation" />
@@ -76,8 +76,8 @@ export default function Modernize() {
   const { analysisResult, selectedApp } = useApp();
   const [phase, setPhase] = useState<'all' | 'NOW' | 'NEXT' | 'LATER'>('all');
 
-  if (!selectedApp) return <div className="p-8 text-center text-gray-500">Select an application.</div>;
-  if (!analysisResult) return <div className="p-8 text-center text-gray-500">Run analysis to view modernization recommendations.</div>;
+  if (!selectedApp) return <div className="p-8 text-center text-gray-700">Select an application.</div>;
+  if (!analysisResult) return <div className="p-8 text-center text-gray-700">Run analysis to view modernization recommendations.</div>;
 
   const { profile } = analysisResult;
   const recs = profile.recommendations;
@@ -96,8 +96,8 @@ export default function Modernize() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {(['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'] as const).map(p => (
           <div key={p} className={`rounded-lg border p-3 text-center ${p === 'CRITICAL' ? 'border-red-800 bg-red-950/20' : p === 'HIGH' ? 'border-orange-800 bg-orange-950/20' : p === 'MEDIUM' ? 'border-yellow-800 bg-yellow-950/20' : 'border-gray-700 bg-gray-900'}`}>
-            <div className="text-2xl font-bold text-white">{byPriority(p).length}</div>
-            <div className="text-xs text-gray-500">{p}</div>
+            <div className="text-2xl font-bold text-gray-800">{byPriority(p).length}</div>
+            <div className="text-xs text-gray-700">{p}</div>
           </div>
         ))}
       </div>
@@ -130,7 +130,7 @@ export default function Modernize() {
           <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-800 text-xs text-gray-500">
+                <tr className="border-b border-gray-800 text-xs text-gray-700">
                   <th className="px-3 py-2 text-left">ID</th>
                   <th className="px-3 py-2 text-left">Recommendation</th>
                   <th className="px-3 py-2 text-left">Target Tech</th>
@@ -155,7 +155,7 @@ export default function Modernize() {
                         : <span className="text-red-400 font-bold">✗ No</span>}
                     </td>
                     <td className="px-3 py-2 text-center text-xs text-gray-400">{item.priority}</td>
-                    <td className="px-3 py-2 text-xs text-gray-500">{item.status}</td>
+                    <td className="px-3 py-2 text-xs text-gray-700">{item.status}</td>
                   </tr>
                 ))}
               </tbody>
