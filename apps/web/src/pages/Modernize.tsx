@@ -6,6 +6,7 @@ import { ChevronDown, ChevronRight, Zap } from 'lucide-react';
 import type { Recommendation } from '../types';
 import AIInsightCard from '../components/AIInsightCard';
 import WhyButton from '../components/WhyButton';
+import InfoTooltip from '../components/InfoTooltip';
 
 function RecCard({ rec, appId }: { rec: Recommendation; appId: string }) {
   const [open, setOpen] = useState(false);
@@ -88,7 +89,7 @@ export default function Modernize() {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-xl font-bold text-white">Modernize: {selectedApp.app_name}</h1>
+      <div className="flex items-center gap-2"><h1 className="text-2xl font-bold text-[var(--color-primary)]">Modernize: {selectedApp.app_name}</h1><InfoTooltip text="Existing modernization priorities remain deterministic; AI explains the evidence behind each recommendation." /></div>
       <AIInsightCard appId={selectedApp.app_id} intent="modernization" title="AI Roadmap Explanation" />
 
       {/* Summary */}

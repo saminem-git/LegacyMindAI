@@ -9,6 +9,7 @@ import { useApp } from '../hooks/useApp';
 import { EvidencePanel } from './Understand';
 import type { GraphNode, GraphEdge, Finding } from '../types';
 import AIInsightCard from '../components/AIInsightCard';
+import InfoTooltip from '../components/InfoTooltip';
 
 const NODE_COLORS: Record<string, string> = {
   Application: '#1d4ed8',
@@ -134,7 +135,7 @@ export default function Dependencies() {
       <div className="flex-1 flex flex-col">
         {/* Controls */}
         <div className="p-3 border-b border-gray-800 flex items-center gap-3 flex-wrap">
-          <span className="text-xs text-gray-500 font-medium">Filter:</span>
+          <span className="text-xs text-gray-500 font-medium flex items-center gap-1">Filter: <InfoTooltip text="Filter the deterministic relationship graph to focus on orphan, cyclic, or runtime-critical connections." /></span>
           {(['all', 'orphan', 'cycle', 'critical'] as const).map(f => (
             <button
               key={f}

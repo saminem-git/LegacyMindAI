@@ -5,6 +5,7 @@ import { Search, ChevronDown, ChevronRight, AlertTriangle } from 'lucide-react';
 import type { Finding } from '../types';
 import AIInsightCard from '../components/AIInsightCard';
 import WhyButton from '../components/WhyButton';
+import InfoTooltip from '../components/InfoTooltip';
 
 function EvidencePanel({ evidence }: { evidence: Finding['evidence'] }) {
   return (
@@ -94,7 +95,7 @@ export default function Understand() {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-xl font-bold text-white">Understand: {app.app_name}</h1>
+      <div><div className="flex items-center gap-2"><h1 className="text-2xl font-bold text-[var(--color-primary)]">Understand: {app.app_name}</h1><InfoTooltip text="Review the application profile, recovered modules, business rules, and deterministic findings." /></div><p className="text-sm text-slate-500 mt-1">Build a shared understanding before making modernization decisions.</p></div>
       <AIInsightCard appId={app.app_id} intent="understanding" title="AI Understanding" />
 
       {/* App profile */}

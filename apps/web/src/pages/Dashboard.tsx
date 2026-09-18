@@ -1,21 +1,21 @@
-import { useRef } from 'react';
 import { useApp } from '../hooks/useApp';
-import { ShieldAlert, Zap, Upload, Play, Layers } from 'lucide-react';
+import { ShieldAlert, Zap, Play, Layers } from 'lucide-react';
 import { SeverityBadge } from '../components/Layout';
 import AIInsightCard from '../components/AIInsightCard';
 import WhyButton from '../components/WhyButton';
+import InfoTooltip from '../components/InfoTooltip';
 
 function StatCard({ label, value, sub, color = 'blue' }: { label: string; value: string | number; sub?: string; color?: string }) {
   const colors: Record<string, string> = {
-    blue: 'border-blue-800 bg-blue-950/30',
-    red: 'border-red-800 bg-red-950/30',
-    green: 'border-green-800 bg-green-950/30',
-    yellow: 'border-yellow-800 bg-yellow-950/30',
-    purple: 'border-purple-800 bg-purple-950/30',
+    blue: 'border-sky-200 bg-sky-50',
+    red: 'border-red-200 bg-red-50',
+    green: 'border-emerald-200 bg-emerald-50',
+    yellow: 'border-amber-200 bg-amber-50',
+    purple: 'border-cyan-200 bg-cyan-50',
   };
   return (
     <div className={`rounded-lg border p-4 ${colors[color]}`}>
-      <div className="text-2xl font-bold text-white">{value}</div>
+      <div className="text-2xl font-bold text-[var(--color-primary)]">{value}</div>
       <div className="text-sm text-gray-400 mt-0.5">{label}</div>
       {sub && <div className="text-xs text-gray-600 mt-1">{sub}</div>}
     </div>
@@ -23,57 +23,19 @@ function StatCard({ label, value, sub, color = 'blue' }: { label: string; value:
 }
 
 export default function Dashboard() {
-  const { workbookData, analysisResult, selectedApp, importWorkbook, analyzeApp, isImporting, isAnalyzing } = useApp();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { workbookData, analysisResult, selectedApp, analyzeApp, isAnalyzing } = useApp();
 
-  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) importWorkbook(file);
-    e.target.value = '';
-  };
-
-  if (!workbookData) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full gap-6 text-center p-8">
-        <div className="w-16 h-16 bg-blue-900/40 rounded-full flex items-center justify-center">
-          <Upload size={28} className="text-blue-400" />
-        </div>
-        <div>
-          <h2 className="text-xl font-semibold text-white mb-2">Welcome to LegacyMind AI</h2>
-          <p className="text-gray-400 text-sm max-w-md">
-            Import your legacy application discovery dataset to begin analysis.
-            <br />
-            <span className="text-gray-600 text-xs mt-1 block italic">"Understand what exists. Prove what matters. Modernize with confidence."</span>
-          </p>
-        </div>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".xlsx,.xls"
-          className="hidden"
-          onChange={handleFileSelected}
-        />
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          disabled={isImporting}
-          className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium disabled:opacity-50"
-        >
-          <Upload size={16} />
-          {isImporting ? 'Importing...' : 'Import Dataset'}
-        </button>
-      </div>
-    );
-  }
+  if (!workbookData) return null;
 
   const profile = analysisResult?.profile;
   const metrics = profile?.metrics;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 md:p-8 space-y-7 max-w-[1500px] mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-white">Overview</h1>
+          <div className="flex items-center gap-2"><h1 className="text-2xl font-bold text-[var(--color-primary)]">Overview</h1><InfoTooltip text="A decision-support summary of the selected application's evidence, risks, tests, and modernization priorities." /></div>
           <p className="text-sm text-gray-500 mt-0.5">
             {selectedApp ? `Analysis for ${selectedApp.app_name}` : 'Select an application to begin analysis'}
           </p>
@@ -95,8 +57,8 @@ export default function Dashboard() {
         <>
           <AIInsightCard appId={profile.application.app_id} intent="executive" title="AI Executive Insight" />
           <div className="border-t border-gray-800 pt-4">
-            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-              Analysis: {profile.application.app_name}
+            <h2 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+              Analysis: {profile.application.app_name} <InfoTooltip text="The deterministic analysis is calculated from the imported discovery dataset." />
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <StatCard label="Critical Findings" value={metrics.criticalFindings} color="red" />

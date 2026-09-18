@@ -6,6 +6,7 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 import type { FindingType } from '../types';
 import AIInsightCard from '../components/AIInsightCard';
 import WhyButton from '../components/WhyButton';
+import InfoTooltip from '../components/InfoTooltip';
 
 const RISK_GROUPS: { label: string; types: FindingType[] }[] = [
   { label: 'Security', types: ['SECURITY_RISK'] },
@@ -34,7 +35,7 @@ export default function Risks() {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-xl font-bold text-white">Risks: {selectedApp.app_name}</h1>
+      <div className="flex items-center gap-2"><h1 className="text-2xl font-bold text-[var(--color-primary)]">Risks: {selectedApp.app_name}</h1><InfoTooltip text="Risks are calculated from deterministic findings across security, continuity, dependencies, testing, documentation, and complexity." /></div>
       <AIInsightCard appId={selectedApp.app_id} intent="risks" title="AI Risk Interpretation" />
 
       {/* Summary */}

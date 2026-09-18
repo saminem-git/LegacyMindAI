@@ -4,6 +4,7 @@ import { Copy, Download } from 'lucide-react';
 import type { GeneratedDocument } from '../types';
 import mermaid from 'mermaid';
 import AIInsightCard from '../components/AIInsightCard';
+import InfoTooltip from '../components/InfoTooltip';
 
 mermaid.initialize({ startOnLoad: false, theme: 'dark', securityLevel: 'strict' });
 
@@ -142,7 +143,7 @@ export default function Documents() {
 
   return (
     <div className="p-6">
-      <h1 className="text-xl font-bold text-white mb-4">Documentation: {selectedApp.app_name}</h1>
+      <div className="flex items-center gap-2 mb-4"><h1 className="text-2xl font-bold text-[var(--color-primary)]">Documentation: {selectedApp.app_name}</h1><InfoTooltip text="Documentation recovered from discovery artifacts and enhanced with evidence-grounded AI interpretation." /></div>
       <div className="flex gap-1 mb-6 border-b border-gray-800">
         {tabLabels.map((label, i) => (
           <button

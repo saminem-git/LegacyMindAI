@@ -14,7 +14,7 @@ export default function WhyButton({ appId, intent, entityId, label = 'Why?' }: P
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<AIViewMode>('executive');
     return <div className="mt-2">
-        <button type="button" onClick={() => setOpen(value => !value)} aria-expanded={open} className="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300"><HelpCircle size={12} /> {open ? 'Hide explanation' : label}</button>
+        <button type="button" onClick={() => setOpen(value => !value)} aria-expanded={open} className="inline-flex items-center gap-1 text-xs font-medium text-[var(--color-vw-blue)] hover:text-[var(--color-primary)]"><HelpCircle size={12} /> {open ? 'Hide explanation' : label}</button>
         {open && <div className="mt-2"><AIInsightCard appId={appId} intent={intent} entityId={entityId} mode={mode} onModeChange={setMode} title="Why this matters" /></div>}
     </div>;
 }

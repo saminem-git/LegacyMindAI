@@ -4,6 +4,7 @@ import { EvidencePanel } from './Understand';
 import { AlertTriangle, CheckCircle, HelpCircle, ChevronDown, ChevronRight } from 'lucide-react';
 import AIInsightCard from '../components/AIInsightCard';
 import WhyButton from '../components/WhyButton';
+import InfoTooltip from '../components/InfoTooltip';
 
 function ParityBadge({ status }: { status: string }) {
   if (status === 'PASS') return <span className="flex items-center gap-1 text-xs text-green-400"><CheckCircle size={11} />PASS</span>;
@@ -34,7 +35,7 @@ export default function Tests() {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-xl font-bold text-white">Tests & Parity: {selectedApp.app_name}</h1>
+      <div className="flex items-center gap-2"><h1 className="text-2xl font-bold text-[var(--color-primary)]">Tests & Parity: {selectedApp.app_name}</h1><InfoTooltip text="Parity compares expected behavior with the recorded legacy result. UNKNOWN means the evidence is insufficient." /></div>
       <AIInsightCard appId={selectedApp.app_id} intent="tests" title="AI Test Coverage Interpretation" />
 
       {/* Summary cards */}

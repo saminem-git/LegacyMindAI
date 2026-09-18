@@ -4,6 +4,7 @@ import { useApp } from '../hooks/useApp';
 import { EvidencePanel } from './Understand';
 import { Search } from 'lucide-react';
 import AIInsightCard from '../components/AIInsightCard';
+import InfoTooltip from '../components/InfoTooltip';
 
 export default function Traceability() {
   const { analysisResult, selectedApp } = useApp();
@@ -36,7 +37,7 @@ export default function Traceability() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white">Traceability: {selectedApp.app_name}</h1>
+          <div className="flex items-center gap-2"><h1 className="text-2xl font-bold text-[var(--color-primary)]">Traceability: {selectedApp.app_name}</h1><InfoTooltip text="Traceability connects findings, recommendations, and tests back to the source records that support them." /></div>
           <p className="text-xs text-gray-500 mt-0.5">Every finding, recommendation, and test traced back to source evidence.</p>
         </div>
         <div className="relative">

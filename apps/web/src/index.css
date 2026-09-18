@@ -2,9 +2,342 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --lm-deep-space-blue: #002733;
+  --lm-vivid-green: #008c82;
+  --lm-electric-neon: #c2fe06;
+  --lm-coral: #e67364;
+  --lm-orange: #faa93c;
+  --lm-beige: #fad2aa;
+  --lm-blue: #8cbee6;
+  --lm-violet: #c882be;
+  --lm-lavender: #dccdff;
+  --lm-red: #da0c1f;
+  --lm-amber: #fccd22;
+  --lm-green: #5ffe06;
+  --color-primary: var(--lm-deep-space-blue);
+  --color-vw-blue: var(--lm-vivid-green);
+  --color-ai: var(--lm-electric-neon);
+  --color-ai-light: #efffb5;
+  --color-background: #f8fafc;
+  --color-surface: #ffffff;
+  --color-text: #0f172a;
+  --color-muted: #64748b;
+  --color-border: #dbe4ee;
+  --shadow-soft: 0 12px 30px rgba(0, 39, 51, 0.1);
+}
+
 @layer base {
+  html {
+    background: var(--color-background);
+  }
+
   body {
-    @apply bg-gray-950 text-gray-100 font-sans;
+    @apply font-sans;
+    background: var(--color-background);
+    color: var(--color-text);
+    font-family: "Aptos", "Segoe UI", sans-serif;
+    letter-spacing: 0;
+  }
+
+  button,
+  input {
+    font: inherit;
+  }
+
+  button:focus-visible,
+  input:focus-visible,
+  [tabindex="0"]:focus-visible {
+    outline: 3px solid rgba(0, 180, 216, 0.45);
+    outline-offset: 2px;
+  }
+}
+
+/* Keep existing page components intact while moving the product surface to the shared light theme. */
+.bg-gray-950 {
+  background-color: var(--color-background) !important;
+}
+
+.bg-gray-900 {
+  background-color: var(--color-surface) !important;
+}
+
+.bg-gray-800 {
+  background-color: #f1f5f9 !important;
+}
+
+.bg-gray-700 {
+  background-color: #e2e8f0 !important;
+}
+
+.border-gray-800,
+.border-gray-700,
+.border-gray-600 {
+  border-color: var(--color-border) !important;
+}
+
+.text-white {
+  color: var(--color-text) !important;
+}
+
+.bg-gray-900 .text-white,
+.bg-gray-950 .text-white,
+.bg-\[var\(--color-primary\)\] .text-white,
+aside .text-white {
+  color: #ffffff !important;
+}
+
+aside .text-gray-400,
+aside .text-gray-500,
+aside .text-gray-600,
+header .text-gray-400,
+header .text-gray-500,
+header .text-gray-600 {
+  color: rgba(255, 255, 255, 0.68) !important;
+}
+
+aside .hover\:text-\[var\(--color-primary\)\]:hover {
+  color: var(--lm-electric-neon) !important;
+}
+
+.text-gray-100,
+.text-gray-200,
+.text-gray-300 {
+  color: #334155 !important;
+}
+
+.text-gray-400,
+.text-gray-500 {
+  color: var(--color-muted) !important;
+}
+
+.text-gray-600 {
+  color: #94a3b8 !important;
+}
+
+.shadow-xl {
+  box-shadow: var(--shadow-soft) !important;
+}
+
+.bg-blue-600 {
+  background-color: var(--lm-vivid-green) !important;
+}
+
+.hover\:bg-blue-500:hover {
+  background-color: var(--lm-deep-space-blue) !important;
+}
+
+.border-blue-500,
+.border-blue-600,
+.focus\:border-blue-600:focus {
+  border-color: var(--lm-deep-space-blue) !important;
+}
+
+.text-blue-400,
+.text-blue-500 {
+  color: var(--lm-vivid-green) !important;
+}
+
+.hover\:text-blue-300:hover {
+  color: var(--lm-deep-space-blue) !important;
+}
+
+.text-green-400 {
+  color: #167c48 !important;
+}
+
+.text-red-400 {
+  color: var(--lm-red) !important;
+}
+
+/* Status color families: background and foreground are remapped together so text never
+   disappears against its own card (fixes light-on-light / dark-on-dark combinations). */
+.bg-red-900,
+.bg-red-950,
+.bg-red-950\/10,
+.bg-red-950\/20,
+.bg-red-950\/30,
+.bg-red-950\/40 {
+  background-color: #fef2f2 !important;
+}
+
+.border-red-700,
+.border-red-800,
+.border-red-900 {
+  border-color: #fecaca !important;
+}
+
+.text-red-200,
+.text-red-300 {
+  color: #b91c1c !important;
+}
+
+.bg-orange-900,
+.bg-orange-950\/10,
+.bg-orange-950\/20,
+.bg-orange-950\/30 {
+  background-color: #fff7ed !important;
+}
+
+.border-orange-700,
+.border-orange-800 {
+  border-color: #fed7aa !important;
+}
+
+.text-orange-200,
+.text-orange-300,
+.text-orange-400 {
+  color: #c2410c !important;
+}
+
+.bg-yellow-900,
+.bg-yellow-950\/10,
+.bg-yellow-950\/20,
+.bg-yellow-950\/30,
+.bg-yellow-950\/40 {
+  background-color: #fffbeb !important;
+}
+
+.border-yellow-700,
+.border-yellow-800 {
+  border-color: #fde68a !important;
+}
+
+.text-yellow-200,
+.text-yellow-300,
+.text-yellow-400 {
+  color: #a16207 !important;
+}
+
+.bg-green-900,
+.bg-green-950\/10,
+.bg-green-950\/20,
+.bg-green-950\/30 {
+  background-color: #f0fdf4 !important;
+}
+
+.border-green-700,
+.border-green-800 {
+  border-color: #bbf7d0 !important;
+}
+
+.text-green-200,
+.text-green-300 {
+  color: #15803d !important;
+}
+
+.bg-blue-900,
+.bg-blue-950,
+.bg-blue-950\/10,
+.bg-blue-950\/20,
+.bg-blue-950\/30,
+.bg-blue-950\/40 {
+  background-color: #eff8ff !important;
+}
+
+.border-blue-700,
+.border-blue-800,
+.border-blue-900,
+.border-blue-900\/70 {
+  border-color: color-mix(in srgb, var(--lm-vivid-green) 30%, white) !important;
+}
+
+.text-blue-200,
+.text-blue-300 {
+  color: var(--lm-deep-space-blue) !important;
+}
+
+.info-tooltip {
+  position: relative;
+  display: inline-flex;
+  color: var(--color-muted);
+  cursor: help;
+  vertical-align: middle;
+}
+
+.info-tooltip:hover,
+.info-tooltip:focus {
+  color: var(--color-vw-blue);
+}
+
+.info-tooltip__content {
+  position: absolute;
+  z-index: 80;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  width: 220px;
+  transform: translateX(-50%);
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--lm-deep-space-blue);
+  color: white;
+  font-size: 12px;
+  line-height: 1.4;
+  box-shadow: var(--shadow-soft);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.info-tooltip:hover .info-tooltip__content,
+.info-tooltip:focus .info-tooltip__content {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.page-enter {
+  animation: page-enter 240ms ease both;
+}
+
+.stagger-in {
+  animation: stagger-in 420ms cubic-bezier(.2, .8, .2, 1) both;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes stagger-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .info-tooltip__content {
+    left: 0;
+    transform: translateX(0);
+  }
+
+  .info-tooltip:hover .info-tooltip__content,
+  .info-tooltip:focus .info-tooltip__content {
+    transform: translateX(0) translateY(-2px);
   }
 }
 
