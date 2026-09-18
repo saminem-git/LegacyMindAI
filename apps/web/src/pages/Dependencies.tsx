@@ -8,6 +8,7 @@ import 'reactflow/dist/style.css';
 import { useApp } from '../hooks/useApp';
 import { EvidencePanel } from './Understand';
 import type { GraphNode, GraphEdge, Finding } from '../types';
+import AIInsightCard from '../components/AIInsightCard';
 
 const NODE_COLORS: Record<string, string> = {
   Application: '#1d4ed8',
@@ -192,6 +193,7 @@ export default function Dependencies() {
 
           {selectedNode && (
             <div className="space-y-3">
+              <AIInsightCard appId={selectedApp.app_id} intent="dependencies" entityId={selectedNode.id} title="AI Dependency Interpretation" compact />
               <div>
                 <div className="text-xs text-gray-500">Type</div>
                 <div className="text-sm font-medium text-white">{selectedNode.type}</div>
@@ -227,6 +229,7 @@ export default function Dependencies() {
 
           {selectedEdge && (
             <div className="space-y-3">
+              <AIInsightCard appId={selectedApp.app_id} intent="dependencies" entityId={selectedEdge.source} title="AI Dependency Interpretation" compact />
               <div>
                 <div className="text-xs text-gray-500">Edge Type</div>
                 <div className="text-sm font-medium text-white">{selectedEdge.type}</div>

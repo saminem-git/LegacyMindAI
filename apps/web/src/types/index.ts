@@ -212,6 +212,51 @@ export interface AnalysisResult {
   documents: GeneratedDocument[];
   graphNodes: GraphNode[];
   graphEdges: GraphEdge[];
+  aiSummary?: {
+    executiveSummary: string;
+    modernizationApproach: string;
+    topRisks: string[];
+    keyInsights: string[];
+  } | null;
+  aiTestScenarios?: {
+    title: string;
+    scenario: string;
+    expectedBehavior: string;
+    ruleId: string;
+    evidence: string;
+  }[];
+}
+
+export interface Evidence {
+  sheet: string;
+  recordId: string;
+  field?: string;
+  value?: unknown;
+}
+
+export interface AIInsight {
+  title: string;
+  severity?: string;
+  summary: string;
+  whyItMatters: string;
+  businessImpact: string;
+  technicalImpact: string;
+  continuityImpact: string;
+  recommendedAction: string;
+  evidence: Evidence[];
+  confidence: 'HIGH' | 'MEDIUM' | 'LOW';
+}
+
+export interface AIChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface AIChatResponse {
+  answer: string;
+  evidence: Evidence[];
+  confidence: 'HIGH' | 'MEDIUM' | 'LOW';
+  followUpContext?: string;
 }
 
 export interface ImportSummary {

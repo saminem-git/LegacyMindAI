@@ -1,7 +1,7 @@
 import { type ReactNode, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, Brain, GitBranch, FileText, TestTube,
+  LayoutDashboard, Brain, GitBranch, FileText, TestTube, MessageSquare,
   Zap, ShieldAlert, Link2, ChevronDown, Upload, Play,
   Loader2, AlertCircle, X, Database
 } from 'lucide-react';
@@ -16,6 +16,7 @@ const NAV = [
   { to: '/modernize', icon: Zap, label: 'Modernize' },
   { to: '/risks', icon: ShieldAlert, label: 'Risks' },
   { to: '/traceability', icon: Link2, label: 'Traceability' },
+  { to: '/assistant', icon: MessageSquare, label: 'AI Assistant' },
 ];
 
 function SeverityBadge({ s }: { s: string }) {

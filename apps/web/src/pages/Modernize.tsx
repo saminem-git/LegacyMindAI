@@ -4,6 +4,7 @@ import { SeverityBadge } from '../components/Layout';
 import { EvidencePanel } from './Understand';
 import { ChevronDown, ChevronRight, Zap } from 'lucide-react';
 import type { Recommendation } from '../types';
+import AIInsightCard from '../components/AIInsightCard';
 
 function RecCard({ rec }: { rec: Recommendation }) {
   const [open, setOpen] = useState(false);
@@ -86,6 +87,7 @@ export default function Modernize() {
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-xl font-bold text-white">Modernize: {selectedApp.app_name}</h1>
+      <AIInsightCard appId={selectedApp.app_id} intent="modernization" title="AI Roadmap Explanation" />
 
       {/* Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

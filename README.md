@@ -60,18 +60,26 @@ Open **http://localhost:5173**
    - **Modernize** — prioritized recommendations with NOW/NEXT/LATER roadmap
    - **Risks** — grouped findings by Security/Continuity/Dependency/Testing/etc.
    - **Traceability** — every finding/recommendation/test traced to source records
+  - **AI Assistant** — project-aware chat grounded in the selected analysis
 
 ---
 
-## Gemini AI (Optional)
+## VW LLMaaS AI (Optional)
 
-Add your API key to `apps/server/.env`:
+Add the server-only configuration to `apps/server/.env`:
 
 ```
-GEMINI_API_KEY=your_key_here
+AI_PROVIDER=llmaas
+LLMAAS_CLIENT_ID=
+LLMAAS_CLIENT_SECRET=
+LLMAAS_API_KEY=
+LLMAAS_TOKEN_URL=https://idp.cloud.vwgroup.com/auth/realms/kums-mfa/protocol/openid-connect/token
+LLMAAS_BASE_URL=https://llmapi.ai.vwgroup.com
+LLMAAS_MODEL=gpt-4o
+LLMAAS_EMBEDDING_MODEL=text-embedding-3-large
 ```
 
-Without a key, all deterministic analysis still works. AI only enhances documentation and test scenario generation.
+Without LLMaaS credentials, all deterministic analysis still works and AI panels show a graceful unavailable state. Credentials and OAuth tokens remain server-side.
 
 ---
 
@@ -82,11 +90,11 @@ apps/
   server/          Node.js + Express backend
     src/
       analysis/    Deterministic engine (cycles, orphans, parity, risk scoring)
-      ai/          LLMProvider + GeminiProvider abstraction
+      ai/          AIProvider, LLMAASProvider, OAuth token service, evidence context, cache, chat
       db/          SQLite via Node.js built-in node:sqlite
-      routes/      /api/workbook, /api/analysis
+      routes/      /api/workbook, /api/analysis, /api/ai
       services/    XLSX importer, documentation generator
-      tests/       18 unit tests
+      tests/       22 unit tests
 
   web/             React + Vite + Tailwind frontend
     src/
@@ -94,7 +102,7 @@ apps/
       components/  Layout, shared UI
       hooks/       useApp context (state management)
       pages/       Dashboard, Understand, Dependencies, Documents,
-                   Tests, Modernize, Risks, Traceability
+           Tests, Modernize, Risks, Traceability, Assistant
       types/       Shared TypeScript types
 
   desktop/         Electron wrapper (main.js + preload.js)
@@ -133,7 +141,7 @@ cd apps/server
 npm test
 ```
 
-18 tests covering: XLSX parsing, normalization, relationship resolution, cycle detection, orphan detection, parity evaluation, risk scoring, traceability.
+22 tests covering: XLSX parsing, normalization, relationship resolution, cycle detection, orphan detection, parity evaluation, risk scoring, traceability, AI context bounds, redaction, caching, OAuth token reuse, LLMaaS headers, and refresh behavior.
 
 ---
 
@@ -142,7 +150,14 @@ npm test
 `apps/server/.env`:
 
 ```
-GEMINI_API_KEY=          # Optional — enables AI features
+AI_PROVIDER=llmaas
+LLMAAS_CLIENT_ID=
+LLMAAS_CLIENT_SECRET=
+LLMAAS_API_KEY=
+LLMAAS_TOKEN_URL=https://idp.cloud.vwgroup.com/auth/realms/kums-mfa/protocol/openid-connect/token
+LLMAAS_BASE_URL=https://llmapi.ai.vwgroup.com
+LLMAAS_MODEL=gpt-4o
+LLMAAS_EMBEDDING_MODEL=text-embedding-3-large
 PORT=3001                # Backend port (default 3001)
 DB_PATH=./legacymind.db
 ```

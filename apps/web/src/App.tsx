@@ -9,6 +9,7 @@ import Tests from './pages/Tests';
 import Modernize from './pages/Modernize';
 import Risks from './pages/Risks';
 import Traceability from './pages/Traceability';
+import Assistant from './pages/Assistant';
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
             <Route path="/modernize" element={<Modernize />} />
             <Route path="/risks" element={<Risks />} />
             <Route path="/traceability" element={<Traceability />} />
+            <Route path="/assistant" element={<Assistant />} />
           </Routes>
         </Layout>
       </AppProvider>

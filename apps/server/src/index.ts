@@ -4,6 +4,7 @@ import cors from 'cors';
 import { initDb } from './db/database.js';
 import workbookRouter from './routes/workbook.js';
 import analysisRouter from './routes/analysis.js';
+import aiRouter from './routes/ai.js';
 import path from 'path';
 
 const app = express();
@@ -19,6 +20,7 @@ app.get('/health', (_req, res) => res.json({ status: 'ok', time: new Date().toIS
 
 app.use('/api/workbook', workbookRouter);
 app.use('/api/analysis', analysisRouter);
+app.use('/api/ai', aiRouter);
 
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('Unhandled error:', err);

@@ -1,4 +1,4 @@
-import type { WorkbookData, AnalysisResult, Application } from '../types';
+import type { WorkbookData, AnalysisResult, Application, AIChatMessage, AIChatResponse, AIInsight } from '../types';
 
 const BASE = '/api';
 
@@ -37,4 +37,18 @@ export const api = {
 
   listAnalyses: () =>
     request<{ id: string; app_id: string; analyzed_at: string }[]>('/analysis/'),
+
+  getAIInsight: (appId: string, intent: string, entityId?: string) =>
+    request<AIInsight>(`/ai/${appId}/insight`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ intent, entityId }),
+    }),
+
+  chatAI: (appId: string, message: string, history: AIChatMessage[], followUpContext?: string) =>
+    request<AIChatResponse>(`/ai/${appId}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, history, followUpContext }),
+    }),
 };

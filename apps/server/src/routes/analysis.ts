@@ -27,7 +27,7 @@ router.post('/:appId', async (req, res) => {
     // AI enhancements (graceful fallback)
     const llm = createLLMProvider();
     let aiSummary = null;
-    let aiTestScenarios: unknown[] = [];
+    let aiTestScenarios: NonNullable<AnalysisResult['aiTestScenarios']> = [];
 
     if (llm.isAvailable()) {
       try {
@@ -52,6 +52,8 @@ router.post('/:appId', async (req, res) => {
       documents,
       graphNodes: nodes,
       graphEdges: edges,
+      aiSummary,
+      aiTestScenarios,
     };
 
     saveAnalysisResult(result);

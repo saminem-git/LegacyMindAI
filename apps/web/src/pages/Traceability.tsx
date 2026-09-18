@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useApp } from '../hooks/useApp';
 import { EvidencePanel } from './Understand';
 import { Search } from 'lucide-react';
+import AIInsightCard from '../components/AIInsightCard';
 
 export default function Traceability() {
   const { analysisResult, selectedApp } = useApp();
@@ -46,6 +47,7 @@ export default function Traceability() {
           />
         </div>
       </div>
+      <AIInsightCard appId={selectedApp.app_id} intent="risks" title="AI Evidence Interpretation" compact />
 
       {/* Tabs */}
       <div className="flex gap-1 border-b border-gray-800">

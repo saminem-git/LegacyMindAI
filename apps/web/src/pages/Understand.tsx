@@ -3,6 +3,7 @@ import { useApp } from '../hooks/useApp';
 import { SeverityBadge } from '../components/Layout';
 import { Search, ChevronDown, ChevronRight, AlertTriangle } from 'lucide-react';
 import type { Finding } from '../types';
+import AIInsightCard from '../components/AIInsightCard';
 
 function EvidencePanel({ evidence }: { evidence: Finding['evidence'] }) {
   return (
@@ -93,6 +94,7 @@ export default function Understand() {
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-xl font-bold text-white">Understand: {app.app_name}</h1>
+      <AIInsightCard appId={app.app_id} intent="understanding" title="AI Understanding" />
 
       {/* App profile */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

@@ -3,6 +3,7 @@ import { useApp } from '../hooks/useApp';
 import { Copy, Download } from 'lucide-react';
 import type { GeneratedDocument } from '../types';
 import mermaid from 'mermaid';
+import AIInsightCard from '../components/AIInsightCard';
 
 mermaid.initialize({ startOnLoad: false, theme: 'dark', securityLevel: 'loose' });
 
@@ -152,6 +153,7 @@ export default function Documents() {
           </button>
         ))}
       </div>
+      <div className="mb-6"><AIInsightCard appId={selectedApp.app_id} intent="document" title="AI Document Insight" /></div>
       <DocViewer doc={docs[activeTab]} />
     </div>
   );

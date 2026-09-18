@@ -1,5 +1,6 @@
 import type { ApplicationProfile } from '@legacymind/shared';
 import type { LLMProvider } from './provider.js';
+import { buildEvidenceContext } from './context.js';
 
 interface AISummary {
   executiveSummary: string;
@@ -17,16 +18,7 @@ interface AITestScenario {
 }
 
 function buildContext(profile: ApplicationProfile): string {
-  const { application: app, modules, businessRules, dependencies, dataStores, integrations, tests, findings } = profile;
-  return JSON.stringify({
-    application: app,
-    modules: modules.map(m => ({ id: m.module_id, name: m.module_name, complexity: m.cyclomatic_complexity, loc: m.lines_of_code, dead: m.is_dead_code, tested: m.has_unit_tests })),
-    businessRules: businessRules.map(r => ({ id: r.rule_id, summary: r.rule_summary, criticality: r.criticality, confidence: r.extraction_confidence, hasTested: r.has_test_case })),
-    dependencies: dependencies.map(d => ({ id: d.dependency_id, from: d.source_module_id, to: d.target_id, critical: d.is_runtime_critical })),
-    dataStores: dataStores.map(s => ({ id: s.store_id, name: s.store_name, pii: s.pii_present })),
-    integrations: integrations.map(i => ({ id: i.integration_id, name: i.interface_name, status: i.status, target: i.downstream_target })),
-    findings: findings.map(f => ({ type: f.type, severity: f.severity, title: f.title })),
-  }, null, 2);
+  return buildEvidenceContext(profile, 'executive').context;
 }
 
 const BASE_INSTRUCTION = `You are a legacy application modernization analyst.
@@ -115,6 +107,6 @@ ${result.keyCapabilities.map(c => `- ${c}`).join('\n')}
 
 **Data Flow:** ${result.dataFlowSummary}`;
   } catch {
-    return `## AI-Generated Business Context\n> AI analysis unavailable. Configure GEMINI_API_KEY for AI-enhanced documentation.`;
+    return `## AI-Generated Business Context\n> AI analysis unavailable. Configure VW LLMaaS for AI-enhanced documentation.`;
   }
 }

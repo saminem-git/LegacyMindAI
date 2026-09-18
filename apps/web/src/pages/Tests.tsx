@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useApp } from '../hooks/useApp';
 import { EvidencePanel } from './Understand';
 import { AlertTriangle, CheckCircle, HelpCircle, ChevronDown, ChevronRight } from 'lucide-react';
+import AIInsightCard from '../components/AIInsightCard';
 
 function ParityBadge({ status }: { status: string }) {
   if (status === 'PASS') return <span className="flex items-center gap-1 text-xs text-green-400"><CheckCircle size={11} />PASS</span>;
@@ -33,6 +34,7 @@ export default function Tests() {
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-xl font-bold text-white">Tests & Parity: {selectedApp.app_name}</h1>
+      <AIInsightCard appId={selectedApp.app_id} intent="tests" title="AI Test Coverage Interpretation" />
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
@@ -150,6 +152,23 @@ export default function Tests() {
           <div className="text-center py-6 text-gray-600 text-sm">No tests match filter</div>
         )}
       </div>
+
+      {/* Untested critical rules */}
+      {analysisResult.aiTestScenarios && analysisResult.aiTestScenarios.length > 0 && (
+        <div>
+          <h2 className="text-sm font-semibold text-gray-300 mb-3">AI-Generated Parity Scenarios</h2>
+          <div className="space-y-2">
+            {analysisResult.aiTestScenarios.map(scenario => (
+              <div key={`${scenario.ruleId}-${scenario.title}`} className="bg-blue-950/20 border border-blue-900/70 rounded-lg p-3">
+                <div className="flex items-center gap-2 mb-1"><span className="text-xs font-mono text-blue-300">{scenario.ruleId}</span><span className="text-sm text-gray-200">{scenario.title}</span></div>
+                <p className="text-xs text-gray-400">{scenario.scenario}</p>
+                <p className="text-xs text-gray-500 mt-1"><span className="text-gray-400">Expected:</span> {scenario.expectedBehavior}</p>
+                <p className="text-[10px] text-blue-400 mt-2">{scenario.evidence}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Untested critical rules */}
       {untestedCritical.length > 0 && (

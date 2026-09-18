@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { useApp } from '../hooks/useApp';
 import { ShieldAlert, Zap, Upload, Play, Layers } from 'lucide-react';
 import { SeverityBadge } from '../components/Layout';
+import AIInsightCard from '../components/AIInsightCard';
 
 function StatCard({ label, value, sub, color = 'blue' }: { label: string; value: string | number; sub?: string; color?: string }) {
   const colors: Record<string, string> = {
@@ -91,6 +92,7 @@ export default function Dashboard() {
       {/* Analysis results */}
       {profile && metrics && (
         <>
+          <AIInsightCard appId={profile.application.app_id} intent="executive" title="AI Executive Insight" />
           <div className="border-t border-gray-800 pt-4">
             <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
               Analysis: {profile.application.app_name}

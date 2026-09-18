@@ -1,64 +1,48 @@
-export interface LLMProvider {
+import { LLMAASClient } from './llmaas-client.js';
+
+export interface AIProvider {
   generateStructured<T>(prompt: string, schema?: unknown): Promise<T>;
   isAvailable(): boolean;
+  name(): string;
 }
 
-export class GeminiProvider implements LLMProvider {
-  private apiKey: string;
-  private model = 'gemini-1.5-flash';
+export type LLMProvider = AIProvider;
 
-  constructor(apiKey: string) {
-    this.apiKey = apiKey;
-  }
-
-  isAvailable(): boolean {
-    return !!this.apiKey && this.apiKey.length > 0;
-  }
-
-  async generateStructured<T>(prompt: string): Promise<T> {
-    if (!this.isAvailable()) throw new Error('Gemini API key not configured');
-
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent?key=${this.apiKey}`;
-    const body = {
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { responseMimeType: 'application/json' },
-    };
-
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-
-    if (!res.ok) {
-      const err = await res.text();
-      throw new Error(`Gemini API error ${res.status}: ${err}`);
-    }
-
-    const data = await res.json() as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) throw new Error('Empty response from Gemini');
-
-    try {
-      return JSON.parse(text) as T;
-    } catch {
-      // Try to extract JSON from markdown code block
-      const match = text.match(/```(?:json)?\s*([\s\S]*?)```/);
-      if (match) return JSON.parse(match[1]) as T;
-      throw new Error(`Failed to parse Gemini response as JSON: ${text.substring(0, 200)}`);
-    }
-  }
-}
-
-export class NullProvider implements LLMProvider {
+export class NullProvider implements AIProvider {
   isAvailable(): boolean { return false; }
+  name(): string { return 'unavailable'; }
   async generateStructured<T>(): Promise<T> {
-    throw new Error('No LLM provider configured. Set GEMINI_API_KEY in .env');
+    throw new Error('No AI provider configured. Set the LLMaaS environment variables in apps/server/.env');
   }
 }
 
 export function createLLMProvider(): LLMProvider {
-  const key = process.env.GEMINI_API_KEY ?? '';
-  if (key) return new GeminiProvider(key);
+  return createAIProvider();
+}
+
+export function createAIProvider(): AIProvider {
+  const provider = (process.env.AI_PROVIDER ?? 'llmaas').toLowerCase();
+  if (provider === 'llmaas' && process.env.LLMAAS_CLIENT_ID && process.env.LLMAAS_CLIENT_SECRET && process.env.LLMAAS_API_KEY) {
+    return new LLMAASProvider(new LLMAASClient());
+  }
   return new NullProvider();
+}
+
+export class LLMAASProvider implements AIProvider {
+  constructor(private readonly client: LLMAASClient) {}
+
+  isAvailable(): boolean { return this.client.isConfigured(); }
+  name(): string { return 'llmaas'; }
+
+  async generateStructured<T>(prompt: string): Promise<T> {
+    if (!this.isAvailable()) throw new Error('LLMaaS is not configured');
+    const text = await this.client.chat(prompt);
+    try {
+      return JSON.parse(text) as T;
+    } catch {
+      const match = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+      if (match) return JSON.parse(match[1]) as T;
+      throw new Error(`Failed to parse LLMaaS response as JSON: ${text.substring(0, 200)}`);
+    }
+  }
 }

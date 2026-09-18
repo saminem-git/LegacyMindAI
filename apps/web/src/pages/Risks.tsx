@@ -4,6 +4,7 @@ import { SeverityBadge } from '../components/Layout';
 import { EvidencePanel } from './Understand';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import type { FindingType } from '../types';
+import AIInsightCard from '../components/AIInsightCard';
 
 const RISK_GROUPS: { label: string; types: FindingType[] }[] = [
   { label: 'Security', types: ['SECURITY_RISK'] },
@@ -33,6 +34,7 @@ export default function Risks() {
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-xl font-bold text-white">Risks: {selectedApp.app_name}</h1>
+      <AIInsightCard appId={selectedApp.app_id} intent="risks" title="AI Risk Interpretation" />
 
       {/* Summary */}
       <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
