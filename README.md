@@ -48,7 +48,7 @@ Open **http://localhost:5173**
 
 ## Demo Flow
 
-1. Click **Import Dataset** (top bar) — loads `LegacyMind_Mock_Dataset.xlsx`
+1. Click **Import Dataset** (top bar) — select any XLSX discovery dataset from your device (e.g. `LegacyMind_Mock_Dataset.xlsx`)
 2. Select an application from the dropdown
 3. Click **Analyze Application**
 4. Navigate through:
@@ -102,7 +102,7 @@ apps/
 packages/
   shared/          Domain types (Application, Module, Finding, etc.)
 
-LegacyMind_Mock_Dataset.xlsx   Source of truth for all analysis
+LegacyMind_Mock_Dataset.xlsx   Sample dataset for local development (any compatible XLSX can be uploaded)
 ```
 
 ---
@@ -144,9 +144,10 @@ npm test
 ```
 GEMINI_API_KEY=          # Optional — enables AI features
 PORT=3001                # Backend port (default 3001)
-XLSX_PATH=../../LegacyMind_Mock_Dataset.xlsx
 DB_PATH=./legacymind.db
 ```
+
+Datasets are uploaded from the UI at runtime — no fixed dataset path is required.
 
 **The API key is never sent to the frontend.**
 

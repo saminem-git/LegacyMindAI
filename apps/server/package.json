@@ -10,13 +10,16 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
+    "exceljs": "^4.4.0",
     "express": "^4.21.2",
-    "xlsx": "^0.18.5",
+    "jszip": "^3.10.1",
+    "multer": "^2.0.1",
     "@google/generative-ai": "^0.21.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
+    "@types/multer": "^1.4.12",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3"
   }

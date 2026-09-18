@@ -1,4 +1,6 @@
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
+import JSZip from 'jszip';
+import { readFile } from 'node:fs/promises';
 import type {
   WorkbookData, Application, CodeModule, BusinessRule, DataStore,
   Integration, Dependency, TestCase, ModernizationItem, DocumentationArtifact,
@@ -36,26 +38,113 @@ function normParity(expected: string, legacy: string, status: string): 'PASS' | 
   return 'UNKNOWN';
 }
 
-function getSheet(wb: XLSX.WorkBook, name: string): Record<string, unknown>[] {
-  const ws = wb.Sheets[name];
-  if (!ws) return [];
-  return XLSX.utils.sheet_to_json(ws, { defval: '' }) as Record<string, unknown>[];
+function extractCellValue(value: ExcelJS.CellValue): unknown {
+  if (value === null || value === undefined) return '';
+  if (value instanceof Date) return value.toISOString().slice(0, 10);
+  if (typeof value === 'object') {
+    if ('result' in value) return extractCellValue((value as { result: ExcelJS.CellValue }).result);
+    if ('text' in value) return (value as { text: string }).text;
+    if ('richText' in value) return (value as { richText: { text: string }[] }).richText.map(rt => rt.text).join('');
+    return String(value);
+  }
+  return value;
 }
 
-export function importWorkbook(filePath: string): WorkbookData {
-  let wb: XLSX.WorkBook;
+function getSheet(wb: ExcelJS.Workbook, name: string): Record<string, unknown>[] {
+  const ws = wb.getWorksheet(name);
+  if (!ws) return [];
+
+  const headers: string[] = [];
+  ws.getRow(1).eachCell({ includeEmpty: true }, (cell, colNumber) => {
+    headers[colNumber] = norm(extractCellValue(cell.value));
+  });
+
+  const records: Record<string, unknown>[] = [];
+  for (let r = 2; r <= ws.rowCount; r++) {
+    const row = ws.getRow(r);
+    const record: Record<string, unknown> = {};
+    let hasValue = false;
+    for (let c = 1; c < headers.length; c++) {
+      const header = headers[c];
+      if (!header) continue;
+      const value = extractCellValue(row.getCell(c).value);
+      record[header] = value;
+      if (value !== '' && value !== null && value !== undefined) hasValue = true;
+    }
+    if (hasValue) records.push(record);
+  }
+  return records;
+}
+
+// ExcelJS's docProps parser is strict about property order/shape and rejects
+// files from many non-Excel producers (Google Sheets, LibreOffice, openpyxl, etc.)
+// with errors like "Unexpected xml node in parseOpen". These properties are pure
+// metadata we don't use, so replace them with a minimal valid version instead of
+// depending on every producer matching Excel's exact XML shape.
+async function sanitizeWorkbookBuffer(input: Buffer): Promise<Buffer> {
+  const minimalCore = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' +
+    '<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" ' +
+    'xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" ' +
+    'xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></cp:coreProperties>';
+  const minimalApp = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' +
+    '<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" ' +
+    'xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"></Properties>';
+
+  let zip: JSZip;
   try {
-    wb = XLSX.readFile(filePath);
+    zip = await JSZip.loadAsync(input);
+  } catch {
+    // Not a zip we can inspect (e.g. legacy .xls) — let ExcelJS handle/report it as-is.
+    return input;
+  }
+
+  let changed = false;
+  if (zip.file('docProps/core.xml')) {
+    zip.file('docProps/core.xml', minimalCore);
+    changed = true;
+  }
+  if (zip.file('docProps/app.xml')) {
+    zip.file('docProps/app.xml', minimalApp);
+    changed = true;
+  }
+  if (!changed) return input;
+
+  return zip.generateAsync({ type: 'nodebuffer' });
+}
+
+export async function importWorkbook(filePath: string): Promise<WorkbookData> {
+  const wb = new ExcelJS.Workbook();
+  try {
+    const raw = await readFile(filePath);
+    const sanitized = await sanitizeWorkbookBuffer(raw);
+    await wb.xlsx.load(sanitized as unknown as ExcelJS.Buffer);
   } catch (e) {
     throw new Error(`Failed to read workbook at ${filePath}: ${(e as Error).message}`);
   }
 
+  return parseWorkbook(wb);
+}
+
+export async function importWorkbookBuffer(buffer: Buffer, fileName = 'uploaded workbook'): Promise<WorkbookData> {
+  const wb = new ExcelJS.Workbook();
+  try {
+    const sanitized = await sanitizeWorkbookBuffer(buffer);
+    await wb.xlsx.load(sanitized as unknown as ExcelJS.Buffer);
+  } catch (e) {
+    throw new Error(`Failed to read workbook ${fileName}: ${(e as Error).message}`);
+  }
+
+  return parseWorkbook(wb);
+}
+
+function parseWorkbook(wb: ExcelJS.Workbook): WorkbookData {
   const warnings: string[] = [];
   const errors: string[] = [];
 
   // Validate required sheets
+  const sheetNames = wb.worksheets.map(ws => ws.name);
   for (const sheet of REQUIRED_SHEETS) {
-    if (!wb.SheetNames.includes(sheet)) {
+    if (!sheetNames.includes(sheet)) {
       errors.push(`Missing required sheet: ${sheet}`);
     }
   }
@@ -238,3 +327,4 @@ export function importWorkbook(filePath: string): WorkbookData {
     importSummary,
   };
 }
+

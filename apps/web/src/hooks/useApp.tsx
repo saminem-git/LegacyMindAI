@@ -10,7 +10,7 @@ interface AppState {
   isAnalyzing: boolean;
   analyzeProgress: string[];
   error: string | null;
-  importWorkbook: () => Promise<void>;
+  importWorkbook: (file: File) => Promise<void>;
   selectApp: (app: Application) => void;
   analyzeApp: () => Promise<void>;
   clearError: () => void;
@@ -45,11 +45,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [analyzeProgress, setAnalyzeProgress] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const importWorkbook = useCallback(async () => {
+  const importWorkbook = useCallback(async (file: File) => {
     setIsImporting(true);
     setError(null);
     try {
-      await api.importWorkbook();
+      await api.importWorkbook(file);
       const data = await api.getWorkbookData();
       setWorkbookData(data);
       // Try to restore last analysis if selected app still valid

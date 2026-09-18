@@ -12,8 +12,14 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  importWorkbook: () =>
-    request<{ success: boolean; summary: WorkbookData['importSummary'] }>('/workbook/import', { method: 'POST' }),
+  importWorkbook: (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return request<{ success: boolean; summary: WorkbookData['importSummary'] }>('/workbook/import', {
+      method: 'POST',
+      body: formData,
+    });
+  },
 
   getWorkbookData: () =>
     request<WorkbookData>('/workbook/data'),

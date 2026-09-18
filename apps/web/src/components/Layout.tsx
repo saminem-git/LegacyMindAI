@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { type ReactNode, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Brain, GitBranch, FileText, TestTube,
@@ -37,6 +37,13 @@ export { SeverityBadge };
 export default function Layout({ children }: { children: ReactNode }) {
   const { workbookData, selectedApp, analysisResult, isImporting, isAnalyzing, analyzeProgress, error, importWorkbook, selectApp, analyzeApp, clearError } = useApp();
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) importWorkbook(file);
+    e.target.value = '';
+  };
 
   return (
     <div className="flex h-screen bg-gray-950 text-gray-100 overflow-hidden">
@@ -125,8 +132,15 @@ export default function Layout({ children }: { children: ReactNode }) {
           )}
 
           {/* Import */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".xlsx,.xls"
+            className="hidden"
+            onChange={handleFileSelected}
+          />
           <button
-            onClick={importWorkbook}
+            onClick={() => fileInputRef.current?.click()}
             disabled={isImporting}
             className="flex items-center gap-1.5 text-xs px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded border border-gray-600 disabled:opacity-50"
           >

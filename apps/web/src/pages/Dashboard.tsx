@@ -1,5 +1,6 @@
+import { useRef } from 'react';
 import { useApp } from '../hooks/useApp';
-import { AlertTriangle, CheckCircle, GitBranch, FileText, Layers, ShieldAlert, Zap, Upload, Play } from 'lucide-react';
+import { ShieldAlert, Zap, Upload, Play, Layers } from 'lucide-react';
 import { SeverityBadge } from '../components/Layout';
 
 function StatCard({ label, value, sub, color = 'blue' }: { label: string; value: string | number; sub?: string; color?: string }) {
@@ -21,6 +22,13 @@ function StatCard({ label, value, sub, color = 'blue' }: { label: string; value:
 
 export default function Dashboard() {
   const { workbookData, analysisResult, selectedApp, importWorkbook, analyzeApp, isImporting, isAnalyzing } = useApp();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) importWorkbook(file);
+    e.target.value = '';
+  };
 
   if (!workbookData) {
     return (
@@ -36,8 +44,15 @@ export default function Dashboard() {
             <span className="text-gray-600 text-xs mt-1 block italic">"Understand what exists. Prove what matters. Modernize with confidence."</span>
           </p>
         </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".xlsx,.xls"
+          className="hidden"
+          onChange={handleFileSelected}
+        />
         <button
-          onClick={importWorkbook}
+          onClick={() => fileInputRef.current?.click()}
           disabled={isImporting}
           className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium disabled:opacity-50"
         >
@@ -48,20 +63,8 @@ export default function Dashboard() {
     );
   }
 
-  const { importSummary } = workbookData;
   const profile = analysisResult?.profile;
   const metrics = profile?.metrics;
-
-  const criticalApps = workbookData.applications.filter(a =>
-    a.criticality?.toLowerCase() === 'critical' || a.criticality?.toLowerCase() === 'high'
-  ).length;
-
-  const totalTests = workbookData.tests.length;
-  const passTests = workbookData.tests.filter(t => t.parity_status === 'PASS').length;
-  const mismatchTests = workbookData.tests.filter(t => t.parity_status === 'MISMATCH').length;
-  const avgDoc = workbookData.applications.length > 0
-    ? Math.round(workbookData.applications.reduce((s, a) => s + a.doc_coverage_pct, 0) / workbookData.applications.length)
-    : 0;
 
   return (
     <div className="p-6 space-y-6">
@@ -69,7 +72,9 @@ export default function Dashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-white">Overview</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Legacy application modernization workspace</p>
+          <p className="text-sm text-gray-500 mt-0.5">
+            {selectedApp ? `Analysis for ${selectedApp.app_name}` : 'Select an application to begin analysis'}
+          </p>
         </div>
         {selectedApp && !analysisResult && (
           <button
@@ -82,43 +87,6 @@ export default function Dashboard() {
           </button>
         )}
       </div>
-
-      {/* Dataset stats */}
-      <div>
-        <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Dataset</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          <StatCard label="Applications" value={importSummary.applications} color="blue" />
-          <StatCard label="Critical/High Apps" value={criticalApps} color="red" />
-          <StatCard label="Code Modules" value={importSummary.modules} color="purple" />
-          <StatCard label="Business Rules" value={importSummary.businessRules} color="yellow" />
-          <StatCard label="Dependencies" value={importSummary.dependencies} color="blue" />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <StatCard label="Test Cases" value={totalTests} sub={`${passTests} PASS · ${mismatchTests} MISMATCH`} color="green" />
-        <StatCard label="Avg Doc Coverage" value={`${avgDoc}%`} color={avgDoc < 30 ? 'red' : 'green'} />
-        <StatCard label="Integrations" value={importSummary.integrations} color="blue" />
-        <StatCard label="Data Stores" value={importSummary.dataStores} color="purple" />
-      </div>
-
-      {/* Import warnings */}
-      {importSummary.warnings.length > 0 && (
-        <div className="bg-yellow-950/30 border border-yellow-800 rounded-lg p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <AlertTriangle size={14} className="text-yellow-400" />
-            <span className="text-sm font-medium text-yellow-300">Import Warnings ({importSummary.warnings.length})</span>
-          </div>
-          <ul className="space-y-1">
-            {importSummary.warnings.slice(0, 5).map((w, i) => (
-              <li key={i} className="text-xs text-yellow-400/80">• {w}</li>
-            ))}
-            {importSummary.warnings.length > 5 && (
-              <li className="text-xs text-yellow-600">...and {importSummary.warnings.length - 5} more</li>
-            )}
-          </ul>
-        </div>
-      )}
 
       {/* Analysis results */}
       {profile && metrics && (
@@ -210,7 +178,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {!selectedApp && workbookData && (
+      {!selectedApp && (
         <div className="bg-gray-900 border border-dashed border-gray-700 rounded-lg p-6 text-center">
           <p className="text-gray-500 text-sm">Select an application from the top bar to begin analysis.</p>
           <div className="mt-3 flex flex-wrap gap-2 justify-center">
@@ -225,10 +193,8 @@ export default function Dashboard() {
 
       {/* Recent analyses */}
       <div className="flex items-center gap-2 text-xs text-gray-600 pt-2 border-t border-gray-800">
-        <CheckCircle size={12} className="text-green-600" />
+        <ShieldAlert size={12} className="text-green-600" />
         <span>All findings derived from imported dataset. No hardcoded values.</span>
-        <GitBranch size={12} className="text-gray-700 ml-2" />
-        <FileText size={12} className="text-gray-700" />
       </div>
     </div>
   );

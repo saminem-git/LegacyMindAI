@@ -1,17 +1,19 @@
 import { Router } from 'express';
-import { importWorkbook } from '../services/importer.js';
+import multer from 'multer';
+import { importWorkbookBuffer } from '../services/importer.js';
 import { saveWorkbookData, loadWorkbookData } from '../db/database.js';
-import path from 'path';
 
 const router = Router();
 
-router.post('/import', async (_req, res) => {
-  try {
-    const xlsxPath = process.env.XLSX_PATH
-      ? path.resolve(process.cwd(), process.env.XLSX_PATH)
-      : path.resolve(process.cwd(), '../../LegacyMind_Mock_Dataset.xlsx');
+// Dataset is user-supplied at runtime; nothing is read from a fixed path on disk.
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024 } });
 
-    const data = importWorkbook(xlsxPath);
+router.post('/import', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: 'No file uploaded. Select an XLSX dataset to import.' });
+    }
+    const data = await importWorkbookBuffer(req.file.buffer, req.file.originalname);
     saveWorkbookData(data);
     return res.json({ success: true, summary: data.importSummary });
   } catch (e) {

@@ -27,8 +27,8 @@ function expect(actual: any): any {
 }
 
 describe('XLSX Importer', () => {
-  it('loads workbook and returns all required sheets', () => {
-    const data = importWorkbook(XLSX_PATH);
+  it('loads workbook and returns all required sheets', async () => {
+    const data = await importWorkbook(XLSX_PATH);
     expect(data.applications.length).toBeGreaterThan(0);
     expect(data.modules.length).toBeGreaterThan(0);
     expect(data.businessRules.length).toBeGreaterThan(0);
@@ -40,8 +40,8 @@ describe('XLSX Importer', () => {
     expect(data.documentationArtifacts.length).toBeGreaterThan(0);
   });
 
-  it('normalizes boolean fields correctly', () => {
-    const data = importWorkbook(XLSX_PATH);
+  it('normalizes boolean fields correctly', async () => {
+    const data = await importWorkbook(XLSX_PATH);
     // All modules should have boolean is_dead_code
     data.modules.forEach(m => {
       expect(typeof m.is_dead_code).toBe('boolean');
@@ -50,49 +50,49 @@ describe('XLSX Importer', () => {
     });
   });
 
-  it('normalizes parity status correctly', () => {
-    const data = importWorkbook(XLSX_PATH);
+  it('normalizes parity status correctly', async () => {
+    const data = await importWorkbook(XLSX_PATH);
     data.tests.forEach(t => {
       expect(['PASS', 'MISMATCH', 'UNKNOWN']).toContain(t.parity_status);
     });
   });
 
-  it('detects orphan data store (owning app not in applications)', () => {
-    const data = importWorkbook(XLSX_PATH);
+  it('detects orphan data store (owning app not in applications)', async () => {
+    const data = await importWorkbook(XLSX_PATH);
     const appIds = new Set(data.applications.map(a => a.app_id));
     const orphans = data.dataStores.filter(d => d.owning_app_id && !appIds.has(d.owning_app_id));
     expect(orphans.length).toBeGreaterThan(0);
     expect(data.importSummary.warnings.some(w => w.includes('unknown app'))).toBe(true);
   });
 
-  it('detects orphan dependency target in warnings', () => {
-    const data = importWorkbook(XLSX_PATH);
+  it('detects orphan dependency target in warnings', async () => {
+    const data = await importWorkbook(XLSX_PATH);
     const orphanWarning = data.importSummary.warnings.find(w => w.includes('not found (orphan)'));
     expect(orphanWarning).toBeDefined();
   });
 
-  it('has no import errors', () => {
-    const data = importWorkbook(XLSX_PATH);
+  it('has no import errors', async () => {
+    const data = await importWorkbook(XLSX_PATH);
     expect(data.importSummary.errors.length).toBe(0);
   });
 });
 
 describe('Analysis Engine', () => {
-  let data: ReturnType<typeof importWorkbook>;
+  let data: Awaited<ReturnType<typeof importWorkbook>>;
 
-  it('loads data', () => {
-    data = importWorkbook(XLSX_PATH);
+  it('loads data', async () => {
+    data = await importWorkbook(XLSX_PATH);
     expect(data).toBeDefined();
   });
 
-  it('analyzes first application without throwing', () => {
-    data = importWorkbook(XLSX_PATH);
+  it('analyzes first application without throwing', async () => {
+    data = await importWorkbook(XLSX_PATH);
     const firstApp = data.applications[0];
     expect(() => analyzeApplication(firstApp.app_id, data)).not.toThrow();
   });
 
-  it('detects circular dependency', () => {
-    data = importWorkbook(XLSX_PATH);
+  it('detects circular dependency', async () => {
+    data = await importWorkbook(XLSX_PATH);
     // Find an app that has modules involved in a cycle
     // The cycle is in the dataset: MOD-001 -> MOD-002 -> MOD-003 -> MOD-001
     // These belong to APP-01
@@ -103,8 +103,8 @@ describe('Analysis Engine', () => {
     expect(cycleFinding?.evidence.length).toBeGreaterThan(0);
   });
 
-  it('detects orphan dependency', () => {
-    data = importWorkbook(XLSX_PATH);
+  it('detects orphan dependency', async () => {
+    data = await importWorkbook(XLSX_PATH);
     // DEP-004 points to MOD-999 which doesn't exist, source is MOD-009 (APP-02)
     const profile = analyzeApplication('APP-02', data);
     const orphanFinding = profile.findings.find(f => f.type === 'ORPHAN_DEPENDENCY');
@@ -112,8 +112,8 @@ describe('Analysis Engine', () => {
     expect(orphanFinding?.evidence[0].sheet).toBe('Dependencies');
   });
 
-  it('detects parity mismatch', () => {
-    data = importWorkbook(XLSX_PATH);
+  it('detects parity mismatch', async () => {
+    data = await importWorkbook(XLSX_PATH);
     // TC-031 is a known mismatch — find which app contains it dynamically
     const mismatchTest = data.tests.find(t => t.parity_status === 'MISMATCH');
     expect(mismatchTest).toBeDefined();
@@ -126,8 +126,8 @@ describe('Analysis Engine', () => {
     expect(mismatch?.expected_result).not.toBe(mismatch?.legacy_result);
   });
 
-  it('calculates test coverage as a percentage', () => {
-    data = importWorkbook(XLSX_PATH);
+  it('calculates test coverage as a percentage', async () => {
+    data = await importWorkbook(XLSX_PATH);
     const firstApp = data.applications[0];
     const profile = analyzeApplication(firstApp.app_id, data);
     expect(profile.metrics.testCoverage).toBeGreaterThanOrEqual(0);
@@ -140,8 +140,8 @@ describe('Analysis Engine', () => {
     expect(true).toBe(true);
   });
 
-  it('all findings have evidence', () => {
-    data = importWorkbook(XLSX_PATH);
+  it('all findings have evidence', async () => {
+    data = await importWorkbook(XLSX_PATH);
     const firstApp = data.applications[0];
     const profile = analyzeApplication(firstApp.app_id, data);
     profile.findings.forEach(f => {
@@ -151,8 +151,8 @@ describe('Analysis Engine', () => {
     });
   });
 
-  it('all recommendations have evidence', () => {
-    data = importWorkbook(XLSX_PATH);
+  it('all recommendations have evidence', async () => {
+    data = await importWorkbook(XLSX_PATH);
     const firstApp = data.applications[0];
     const profile = analyzeApplication(firstApp.app_id, data);
     profile.recommendations.forEach(r => {
@@ -160,24 +160,25 @@ describe('Analysis Engine', () => {
     });
   });
 
-  it('throws for unknown application ID', () => {
-    data = importWorkbook(XLSX_PATH);
+  it('throws for unknown application ID', async () => {
+    data = await importWorkbook(XLSX_PATH);
     expect(() => analyzeApplication('APP-NONEXISTENT', data)).toThrow();
   });
 
-  it('parity MISMATCH when expected != legacy', () => {
-    data = importWorkbook(XLSX_PATH);
+  it('parity MISMATCH when expected != legacy', async () => {
+    data = await importWorkbook(XLSX_PATH);
     const mismatches = data.tests.filter(t => t.parity_status === 'MISMATCH');
     mismatches.forEach(t => {
       expect(t.expected_result).not.toBe(t.legacy_result);
     });
   });
 
-  it('parity PASS when expected == legacy', () => {
-    data = importWorkbook(XLSX_PATH);
+  it('parity PASS when expected == legacy', async () => {
+    data = await importWorkbook(XLSX_PATH);
     const passes = data.tests.filter(t => t.parity_status === 'PASS');
     passes.forEach(t => {
       expect(t.expected_result).toBe(t.legacy_result);
     });
   });
 });
+
