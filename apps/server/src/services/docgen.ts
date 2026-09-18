@@ -1,4 +1,5 @@
 import type { ApplicationProfile, GeneratedDocument, Evidence } from '@legacymind/shared';
+import { mermaidEdgeLabel, mermaidLabel, mermaidNodeId, validateMermaidFlowchart } from './mermaid.js';
 
 function ev(sheet: string, recordId: string, field?: string): Evidence {
   return { sheet, recordId, field };
@@ -81,8 +82,8 @@ ${businessRules.map(r => `### ${r.rule_id} — ${r.criticality} Criticality
 ## Integrations
 
 ${integrations.length === 0 ? '_No integrations found for this application._' : integrations.map(i =>
-  `- **${i.interface_name}** (${i.integration_id}): ${i.integration_type}, ${i.direction}, ${i.protocol} → ${i.downstream_target} [${i.status}]`
-).join('\n')}
+    `- **${i.interface_name}** (${i.integration_id}): ${i.integration_type}, ${i.direction}, ${i.protocol} → ${i.downstream_target} [${i.status}]`
+  ).join('\n')}
 
 *Source: Integrations — ${integrations.length} records*
 
@@ -91,8 +92,8 @@ ${integrations.length === 0 ? '_No integrations found for this application._' : 
 ## Data Stores
 
 ${dataStores.length === 0 ? '_No data stores found for this application._' : dataStores.map(d =>
-  `- **${d.store_name}** (${d.store_id}): ${d.store_type}, ${d.classification}${d.pii_present ? ' ⚠️ PII' : ''}, ~${d.record_count_est.toLocaleString()} records`
-).join('\n')}
+    `- **${d.store_name}** (${d.store_id}): ${d.store_type}, ${d.classification}${d.pii_present ? ' ⚠️ PII' : ''}, ~${d.record_count_est.toLocaleString()} records`
+  ).join('\n')}
 
 *Source: Data_Stores — ${dataStores.length} records*
 
@@ -101,8 +102,8 @@ ${dataStores.length === 0 ? '_No data stores found for this application._' : dat
 ## Known Risks
 
 ${findings.filter(f => f.severity === 'CRITICAL' || f.severity === 'HIGH').map(f =>
-  `- **[${f.severity}]** ${f.title}\n  ${f.description}\n  *Evidence: ${f.evidence.map(e => `${e.sheet} → ${e.recordId}`).join(', ')}*`
-).join('\n\n') || '_No critical/high findings detected._'}
+    `- **[${f.severity}]** ${f.title}\n  ${f.description}\n  *Evidence: ${f.evidence.map(e => `${e.sheet} → ${e.recordId}`).join(', ')}*`
+  ).join('\n\n') || '_No critical/high findings detected._'}
 
 ---
 
@@ -142,6 +143,7 @@ ${piiStores.length > 0 ? `- PII data present in ${piiStores.map(s => s.store_nam
 
 export function generateProcessFlow(profile: ApplicationProfile): GeneratedDocument {
   const { application: app, modules, businessRules, dependencies } = profile;
+  const moduleIds = new Set(modules.map(m => m.module_id));
 
   const evidence: Evidence[] = [
     ev('Applications', app.app_id),
@@ -152,36 +154,39 @@ export function generateProcessFlow(profile: ApplicationProfile): GeneratedDocum
   const lines: string[] = ['flowchart TD'];
 
   // App node
-  lines.push(`    APP["🏛️ ${app.app_name}\\n${app.app_id}"]`);
+  lines.push(`    APP["${mermaidLabel(app.app_name)}\\n${mermaidLabel(app.app_id)}"]`);
   lines.push(`    style APP fill:#1e40af,color:#fff,stroke:#1e3a8a`);
 
   // Module nodes
   for (const m of modules) {
-    const label = m.is_dead_code ? `💀 ${m.module_name}` : m.module_name;
+    const nodeId = mermaidNodeId(m.module_id);
+    const label = m.is_dead_code ? `DEAD ${m.module_name}` : m.module_name;
     const style = m.is_dead_code
       ? `fill:#6b7280,color:#fff`
       : m.cyclomatic_complexity > 30
-      ? `fill:#dc2626,color:#fff`
-      : m.cyclomatic_complexity > 15
-      ? `fill:#d97706,color:#fff`
-      : `fill:#059669,color:#fff`;
-    lines.push(`    ${m.module_id}["${label}\\n${m.module_id}"]`);
-    lines.push(`    style ${m.module_id} ${style}`);
-    lines.push(`    APP --> ${m.module_id}`);
+        ? `fill:#dc2626,color:#fff`
+        : m.cyclomatic_complexity > 15
+          ? `fill:#d97706,color:#fff`
+          : `fill:#059669,color:#fff`;
+    lines.push(`    ${nodeId}["${mermaidLabel(label)}\\n${mermaidLabel(m.module_id)}"]`);
+    lines.push(`    style ${nodeId} ${style}`);
+    lines.push(`    APP --> ${nodeId}`);
   }
 
   // Dependency edges
   for (const dep of dependencies) {
-    const label = dep.is_runtime_critical ? `|"⚡ ${dep.dependency_kind}"|` : `|"${dep.dependency_kind}"|`;
-    lines.push(`    ${dep.source_module_id} --${label}--> ${dep.target_id}`);
+    if (!moduleIds.has(dep.source_module_id) || !moduleIds.has(dep.target_id)) continue;
+    const label = mermaidEdgeLabel(`${dep.is_runtime_critical ? 'RUNTIME ' : ''}${dep.dependency_kind}`);
+    lines.push(`    ${mermaidNodeId(dep.source_module_id)} -->|${label}| ${mermaidNodeId(dep.target_id)}`);
   }
 
   // Business rule nodes (only critical ones to keep diagram readable)
   const critRules = businessRules.filter(r => r.criticality?.toLowerCase() === 'high' || r.criticality?.toLowerCase() === 'critical');
   for (const r of critRules.slice(0, 8)) {
-    lines.push(`    ${r.rule_id}(["📋 ${r.rule_id}\\n${r.rule_summary.substring(0, 40)}..."])`);
-    lines.push(`    style ${r.rule_id} fill:#7c3aed,color:#fff`);
-    lines.push(`    ${r.module_id} --> ${r.rule_id}`);
+    const ruleNodeId = mermaidNodeId(r.rule_id, 'rule');
+    lines.push(`    ${ruleNodeId}(["${mermaidLabel(r.rule_id)}\\n${mermaidLabel(r.rule_summary, 40)}..."])`);
+    lines.push(`    style ${ruleNodeId} fill:#7c3aed,color:#fff`);
+    if (moduleIds.has(r.module_id)) lines.push(`    ${mermaidNodeId(r.module_id)} --> ${ruleNodeId}`);
   }
 
   lines.push('');
@@ -191,7 +196,7 @@ export function generateProcessFlow(profile: ApplicationProfile): GeneratedDocum
   lines.push('    L3 ~~~ L4["🔴 Module (high complexity)"]');
   lines.push('    L4 ~~~ L5["⚫ Dead Code"] ~~~ L6["🟣 Business Rule"]');
 
-  const mermaidContent = lines.join('\n');
+  const mermaidContent = validateMermaidFlowchart(lines).join('\n');
 
   const content = `# Process Flow: ${app.app_name}
 

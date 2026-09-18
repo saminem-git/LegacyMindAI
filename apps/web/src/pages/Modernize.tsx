@@ -5,8 +5,9 @@ import { EvidencePanel } from './Understand';
 import { ChevronDown, ChevronRight, Zap } from 'lucide-react';
 import type { Recommendation } from '../types';
 import AIInsightCard from '../components/AIInsightCard';
+import WhyButton from '../components/WhyButton';
 
-function RecCard({ rec }: { rec: Recommendation }) {
+function RecCard({ rec, appId }: { rec: Recommendation; appId: string }) {
   const [open, setOpen] = useState(false);
   const contColors: Record<string, string> = {
     CRITICAL: 'text-red-400', HIGH: 'text-orange-400', MEDIUM: 'text-yellow-400', LOW: 'text-green-400',
@@ -63,6 +64,7 @@ function RecCard({ rec }: { rec: Recommendation }) {
             <div className="text-xs text-gray-500 mb-1">Evidence</div>
             <EvidencePanel evidence={rec.evidence} />
           </div>
+          <WhyButton appId={appId} intent="modernization" entityId={rec.id} label="Explain this recommendation" />
         </div>
       )}
     </div>
@@ -116,7 +118,7 @@ export default function Modernize() {
 
         <div className="space-y-3">
           {filtered.length === 0 && <div className="text-center py-6 text-gray-600 text-sm">No recommendations in this phase.</div>}
-          {filtered.map(r => <RecCard key={r.id} rec={r} />)}
+          {filtered.map(r => <RecCard key={r.id} rec={r} appId={selectedApp.app_id} />)}
         </div>
       </div>
 

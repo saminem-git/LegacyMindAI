@@ -5,7 +5,7 @@ import type { GeneratedDocument } from '../types';
 import mermaid from 'mermaid';
 import AIInsightCard from '../components/AIInsightCard';
 
-mermaid.initialize({ startOnLoad: false, theme: 'dark', securityLevel: 'loose' });
+mermaid.initialize({ startOnLoad: false, theme: 'dark', securityLevel: 'strict' });
 
 function MermaidDiagram({ chart }: { chart: string }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -13,6 +13,7 @@ function MermaidDiagram({ chart }: { chart: string }) {
 
   useEffect(() => {
     if (!ref.current) return;
+    setError(null);
     const id = `mermaid-${Date.now()}`;
     mermaid.render(id, chart)
       .then(({ svg }) => {
@@ -21,7 +22,7 @@ function MermaidDiagram({ chart }: { chart: string }) {
       .catch(e => setError(String(e)));
   }, [chart]);
 
-  if (error) return <div className="text-red-400 text-xs p-4 bg-red-950/20 rounded border border-red-800">{error}</div>;
+  if (error) return <div className="text-xs p-4 bg-yellow-950/20 rounded border border-yellow-800"><div className="text-yellow-300 font-medium">Architecture visualization unavailable</div><p className="text-gray-400 mt-1">The source documentation is still available below. Review the dependency summary and traceability records for the structured view.</p></div>;
   return <div ref={ref} className="mermaid-output overflow-auto" />;
 }
 

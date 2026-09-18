@@ -1,7 +1,7 @@
 import { type ReactNode, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, Brain, GitBranch, FileText, TestTube, MessageSquare,
+  LayoutDashboard, Brain, GitBranch, FileText, TestTube, MessageSquare, Network,
   Zap, ShieldAlert, Link2, ChevronDown, Upload, Play,
   Loader2, AlertCircle, X, Database
 } from 'lucide-react';
@@ -11,6 +11,7 @@ const NAV = [
   { to: '/', icon: LayoutDashboard, label: 'Overview' },
   { to: '/understand', icon: Brain, label: 'Understand' },
   { to: '/dependencies', icon: GitBranch, label: 'Dependencies' },
+  { to: '/architecture', icon: Network, label: 'Architecture' },
   { to: '/documents', icon: FileText, label: 'Documents' },
   { to: '/tests', icon: TestTube, label: 'Tests' },
   { to: '/modernize', icon: Zap, label: 'Modernize' },
@@ -69,10 +70,9 @@ export default function Layout({ children }: { children: ReactNode }) {
               to={to}
               end={to === '/'}
               className={({ isActive }) =>
-                `flex items-center gap-2.5 px-3 py-2 rounded text-sm transition-colors ${
-                  isActive
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-400 hover:text-gray-100 hover:bg-gray-800'
+                `flex items-center gap-2.5 px-3 py-2 rounded text-sm transition-colors ${isActive
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-400 hover:text-gray-100 hover:bg-gray-800'
                 }`
               }
             >

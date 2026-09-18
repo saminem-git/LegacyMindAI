@@ -3,6 +3,7 @@ import { useApp } from '../hooks/useApp';
 import { ShieldAlert, Zap, Upload, Play, Layers } from 'lucide-react';
 import { SeverityBadge } from '../components/Layout';
 import AIInsightCard from '../components/AIInsightCard';
+import WhyButton from '../components/WhyButton';
 
 function StatCard({ label, value, sub, color = 'blue' }: { label: string; value: string | number; sub?: string; color?: string }) {
   const colors: Record<string, string> = {
@@ -128,6 +129,7 @@ export default function Dashboard() {
                             Source: {f.evidence[0].sheet} → {f.evidence[0].recordId}
                           </p>
                         )}
+                        <WhyButton appId={profile.application.app_id} intent="risks" entityId={f.id} />
                       </div>
                     </div>
                   ))}

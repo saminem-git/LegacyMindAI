@@ -10,6 +10,7 @@ import Modernize from './pages/Modernize';
 import Risks from './pages/Risks';
 import Traceability from './pages/Traceability';
 import Assistant from './pages/Assistant';
+import Architecture from './pages/Architecture';
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/understand" element={<Understand />} />
             <Route path="/dependencies" element={<Dependencies />} />
+            <Route path="/architecture" element={<Architecture />} />
             <Route path="/documents" element={<Documents />} />
             <Route path="/tests" element={<Tests />} />
             <Route path="/modernize" element={<Modernize />} />

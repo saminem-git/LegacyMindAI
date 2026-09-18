@@ -1,6 +1,7 @@
 import type { ApplicationProfile, Evidence } from '@legacymind/shared';
 
 export type AIIntent = 'executive' | 'understanding' | 'dependencies' | 'tests' | 'risks' | 'modernization' | 'document' | 'chat';
+export type AIViewMode = 'technical' | 'executive';
 
 const SECRET_PATTERN = /(api[_-]?key|secret|password|token|credential)\s*[:=]\s*[^,\s]+/gi;
 
@@ -14,14 +15,23 @@ function redact(value: unknown): unknown {
 }
 
 function evidenceFor(profile: ApplicationProfile, entityId?: string): Evidence[] {
-  if (!entityId) return profile.findings.slice(0, 8).flatMap(f => f.evidence).slice(0, 16);
-  return profile.findings
-    .filter(f => f.id === entityId || f.applicationId === entityId || f.moduleIds?.includes(entityId) || f.ruleIds?.includes(entityId))
-    .flatMap(f => f.evidence)
-    .slice(0, 16);
+  const findingEvidence = !entityId
+    ? profile.findings.slice(0, 8).flatMap(f => f.evidence)
+    : profile.findings
+      .filter(f => f.id === entityId || f.applicationId === entityId || f.moduleIds?.includes(entityId) || f.ruleIds?.includes(entityId))
+      .flatMap(f => f.evidence);
+  const directEvidence = entityId ? [
+    ['Applications', profile.application.app_id],
+    ...profile.modules.filter(m => m.module_id === entityId).map(m => ['Code_Modules', m.module_id]),
+    ...profile.businessRules.filter(r => r.rule_id === entityId).map(r => ['Business_Rules', r.rule_id]),
+    ...profile.tests.filter(t => t.test_id === entityId).map(t => ['Test_Cases', t.test_id]),
+    ...profile.dependencies.filter(d => d.dependency_id === entityId).map(d => ['Dependencies', d.dependency_id]),
+    ...profile.modernizationItems.filter(m => m.backlog_id === entityId).map(m => ['Modernization_Backlog', m.backlog_id]),
+  ].map(([sheet, recordId]) => ({ sheet, recordId })) : [];
+  return [...directEvidence, ...findingEvidence].slice(0, 20) as Evidence[];
 }
 
-export function buildEvidenceContext(profile: ApplicationProfile, intent: AIIntent, entityId?: string): { context: string; evidence: Evidence[] } {
+export function buildEvidenceContext(profile: ApplicationProfile, intent: AIIntent, entityId?: string, mode: AIViewMode = 'technical'): { context: string; evidence: Evidence[] } {
   const app = profile.application;
   const moduleIds = entityId && profile.modules.some(m => m.module_id === entityId)
     ? new Set([entityId])
@@ -48,6 +58,7 @@ export function buildEvidenceContext(profile: ApplicationProfile, intent: AIInte
     recommendations: relevantRecommendations.slice(0, 12),
     metrics: profile.metrics,
     intent,
+    explanationMode: mode,
   };
 
   return { context: JSON.stringify(redact(payload), null, 2).slice(0, 30000), evidence: evidenceFor(profile, entityId) };
@@ -55,8 +66,13 @@ export function buildEvidenceContext(profile: ApplicationProfile, intent: AIInte
 
 export function resolveEvidence(profile: ApplicationProfile, ids: string[]): Evidence[] {
   const wanted = new Set(ids);
-  return profile.findings
-    .filter(f => wanted.has(f.id) || f.moduleIds?.some(id => wanted.has(id)) || f.ruleIds?.some(id => wanted.has(id)))
-    .flatMap(f => f.evidence)
-    .slice(0, 20);
+  const evidence = [
+    ...profile.findings.filter(f => wanted.has(f.id) || f.moduleIds?.some(id => wanted.has(id)) || f.ruleIds?.some(id => wanted.has(id))).flatMap(f => f.evidence),
+    ...profile.modules.filter(m => wanted.has(m.module_id)).map(m => ({ sheet: 'Code_Modules', recordId: m.module_id })),
+    ...profile.businessRules.filter(r => wanted.has(r.rule_id)).map(r => ({ sheet: 'Business_Rules', recordId: r.rule_id })),
+    ...profile.tests.filter(t => wanted.has(t.test_id)).map(t => ({ sheet: 'Test_Cases', recordId: t.test_id })),
+    ...profile.dependencies.filter(d => wanted.has(d.dependency_id)).map(d => ({ sheet: 'Dependencies', recordId: d.dependency_id })),
+    ...profile.modernizationItems.filter(m => wanted.has(m.backlog_id)).map(m => ({ sheet: 'Modernization_Backlog', recordId: m.backlog_id })),
+  ];
+  return evidence.slice(0, 20);
 }

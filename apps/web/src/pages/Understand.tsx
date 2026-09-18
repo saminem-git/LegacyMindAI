@@ -4,6 +4,7 @@ import { SeverityBadge } from '../components/Layout';
 import { Search, ChevronDown, ChevronRight, AlertTriangle } from 'lucide-react';
 import type { Finding } from '../types';
 import AIInsightCard from '../components/AIInsightCard';
+import WhyButton from '../components/WhyButton';
 
 function EvidencePanel({ evidence }: { evidence: Finding['evidence'] }) {
   return (
@@ -153,6 +154,7 @@ export default function Understand() {
                   <div className="px-4 pb-3 border-t border-gray-800">
                     <p className="text-sm text-gray-400 mt-2">{f.description}</p>
                     <EvidencePanel evidence={f.evidence} />
+                    <WhyButton appId={app.app_id} intent="understanding" entityId={f.id} />
                   </div>
                 )}
               </div>

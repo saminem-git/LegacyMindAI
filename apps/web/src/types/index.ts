@@ -245,6 +245,17 @@ export interface AIInsight {
   recommendedAction: string;
   evidence: Evidence[];
   confidence: 'HIGH' | 'MEDIUM' | 'LOW';
+  mode: 'technical' | 'executive';
+  claims: AIClaim[];
+}
+
+export type AIViewMode = 'technical' | 'executive';
+export type AIClaimKind = 'FACT' | 'FINDING' | 'INTERPRETATION' | 'RECOMMENDATION';
+
+export interface AIClaim {
+  text: string;
+  kind: AIClaimKind;
+  evidenceIds: string[];
 }
 
 export interface AIChatMessage {
@@ -257,6 +268,8 @@ export interface AIChatResponse {
   evidence: Evidence[];
   confidence: 'HIGH' | 'MEDIUM' | 'LOW';
   followUpContext?: string;
+  mode: AIViewMode;
+  claims: AIClaim[];
 }
 
 export interface ImportSummary {

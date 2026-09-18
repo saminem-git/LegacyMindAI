@@ -5,6 +5,7 @@ import { EvidencePanel } from './Understand';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import type { FindingType } from '../types';
 import AIInsightCard from '../components/AIInsightCard';
+import WhyButton from '../components/WhyButton';
 
 const RISK_GROUPS: { label: string; types: FindingType[] }[] = [
   { label: 'Security', types: ['SECURITY_RISK'] },
@@ -120,6 +121,7 @@ export default function Risks() {
                   <div className="text-xs text-gray-500 mb-1">Evidence</div>
                   <EvidencePanel evidence={f.evidence} />
                 </div>
+                <WhyButton appId={selectedApp.app_id} intent="risks" entityId={f.id} />
               </div>
             )}
           </div>

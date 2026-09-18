@@ -2,7 +2,7 @@ import { FormEvent, useState } from 'react';
 import { Bot, Send, Loader2 } from 'lucide-react';
 import { useApp } from '../hooks/useApp';
 import { api } from '../api/client';
-import type { AIChatMessage, AIChatResponse } from '../types';
+import type { AIChatMessage, AIChatResponse, AIViewMode } from '../types';
 
 const SUGGESTIONS = [
   'What should I worry about most before modernization?',
@@ -18,19 +18,19 @@ export default function Assistant() {
   const [answer, setAnswer] = useState<AIChatResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mode, setMode] = useState<AIViewMode>('executive');
 
   if (!selectedApp) return <div className="p-8 text-center text-gray-500">Select an application to use the Assistant.</div>;
   if (!analysisResult) return <div className="p-8 text-center text-gray-500">Run analysis to give the Assistant project evidence.</div>;
 
-  const ask = async (event?: FormEvent) => {
-    event?.preventDefault();
-    const question = input.trim();
+  const askQuestion = async (rawQuestion: string) => {
+    const question = rawQuestion.trim();
     if (!question || loading) return;
     setInput('');
     setError(null);
     setLoading(true);
     try {
-      const response = await api.chatAI(selectedApp.app_id, question, messages, answer?.followUpContext);
+      const response = await api.chatAI(selectedApp.app_id, question, messages, answer?.followUpContext, mode);
       const nextMessages: AIChatMessage[] = [...messages, { role: 'user', content: question }, { role: 'assistant', content: response.answer }];
       setMessages(nextMessages.slice(-8));
       setAnswer(response);
@@ -41,16 +41,22 @@ export default function Assistant() {
     }
   };
 
+  const ask = async (event: FormEvent) => {
+    event.preventDefault();
+    await askQuestion(input);
+  };
+
   return (
     <div className="p-6 max-w-4xl space-y-5">
       <div>
         <div className="flex items-center gap-2"><Bot size={20} className="text-blue-400" /><h1 className="text-xl font-bold text-white">AI Assistant</h1></div>
         <p className="text-sm text-gray-500 mt-1">Project-aware guidance for {selectedApp.app_name}. Answers are grounded in deterministic findings and source evidence.</p>
+        <div className="mt-3 inline-flex border border-gray-700 rounded overflow-hidden" aria-label="Assistant explanation mode">{(['technical', 'executive'] as const).map(option => <button key={option} type="button" onClick={() => setMode(option)} className={`text-xs px-3 py-1.5 ${mode === option ? 'bg-blue-700 text-white' : 'bg-gray-900 text-gray-500 hover:text-gray-300'}`}>{option === 'technical' ? 'Technical view' : 'Executive view'}</button>)}</div>
       </div>
 
       {messages.length === 0 && !answer && (
         <div className="grid md:grid-cols-2 gap-2">
-          {SUGGESTIONS.map(question => <button key={question} onClick={() => setInput(question)} className="text-left text-xs text-gray-300 bg-gray-900 border border-gray-800 rounded-lg px-3 py-3 hover:border-blue-700">{question}</button>)}
+          {SUGGESTIONS.map(question => <button key={question} onClick={() => { setInput(question); void askQuestion(question); }} className="text-left text-xs text-gray-300 bg-gray-900 border border-gray-800 rounded-lg px-3 py-3 hover:border-blue-700">{question}</button>)}
         </div>
       )}
 
@@ -59,7 +65,8 @@ export default function Assistant() {
       {answer && (
         <div className="bg-blue-950/20 border border-blue-900/70 rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between"><span className="text-xs uppercase tracking-wider text-blue-300">Evidence-grounded answer</span><span className="text-[10px] text-gray-500">Confidence: {answer.confidence}</span></div>
-          <div className="text-sm text-gray-200 whitespace-pre-wrap">{answer.answer}</div>
+          <div className="text-xs text-gray-500">The answer above is an AI interpretation. Source facts remain in the evidence below.</div>
+          {answer.claims.length > 0 && <div className="space-y-1">{answer.claims.map((claim, i) => <div key={i} className="text-xs text-gray-400"><span className="text-blue-300">{claim.kind}:</span> {claim.text} {claim.evidenceIds.length > 0 && <span className="text-gray-600">[{claim.evidenceIds.map(id => <a key={id} href={`/traceability?search=${encodeURIComponent(id)}`} className="text-blue-400 hover:underline mr-1">{id}</a>)}]</span>}</div>)}</div>}
           {answer.evidence.length > 0 && <div className="flex flex-wrap gap-1">{answer.evidence.map((e, i) => <span key={`${e.recordId}-${i}`} className="text-[10px] font-mono text-blue-300 bg-gray-950 border border-gray-800 rounded px-1.5 py-0.5">{e.sheet} → {e.recordId}</span>)}</div>}
         </div>
       )}

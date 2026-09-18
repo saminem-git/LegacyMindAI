@@ -3,6 +3,7 @@ import { useApp } from '../hooks/useApp';
 import { EvidencePanel } from './Understand';
 import { AlertTriangle, CheckCircle, HelpCircle, ChevronDown, ChevronRight } from 'lucide-react';
 import AIInsightCard from '../components/AIInsightCard';
+import WhyButton from '../components/WhyButton';
 
 function ParityBadge({ status }: { status: string }) {
   if (status === 'PASS') return <span className="flex items-center gap-1 text-xs text-green-400"><CheckCircle size={11} />PASS</span>;
@@ -140,6 +141,7 @@ export default function Tests() {
                           { sheet: 'Test_Cases', recordId: t.test_id, field: 'legacy_result', value: t.legacy_result },
                           { sheet: 'Test_Cases', recordId: t.test_id, field: 'parity_status', value: t.parity_status },
                         ]} />
+                        <WhyButton appId={selectedApp.app_id} intent="tests" entityId={t.test_id} />
                       </div>
                     </td>
                   </tr>

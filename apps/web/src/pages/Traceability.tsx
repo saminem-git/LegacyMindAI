@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useApp } from '../hooks/useApp';
 import { EvidencePanel } from './Understand';
 import { Search } from 'lucide-react';
@@ -13,7 +14,8 @@ export default function Traceability() {
   if (!analysisResult) return <div className="p-8 text-center text-gray-500">Run analysis to view traceability.</div>;
 
   const { profile } = analysisResult;
-  const q = search.toLowerCase();
+  const [params] = useSearchParams();
+  const q = (search || params.get('search') || '').toLowerCase();
 
   const filteredFindings = profile.findings.filter(f =>
     !q || f.title.toLowerCase().includes(q) || f.type.toLowerCase().includes(q) ||
