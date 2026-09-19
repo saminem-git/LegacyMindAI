@@ -44,7 +44,7 @@ export default function Dashboard() {
           <button
             onClick={analyzeApp}
             disabled={isAnalyzing}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-medium disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-emerald-50 rounded-lg text-sm font-medium disabled:opacity-50"
           >
             <Play size={14} />
             Analyze {selectedApp.app_name}
@@ -131,12 +131,12 @@ export default function Dashboard() {
             <Layers size={20} className="text-gray-600" />
           </div>
           <p className="text-gray-400 text-sm mb-4">
-            Application <span className="text-white font-medium">{selectedApp.app_name}</span> selected. Run analysis to generate findings.
+            Application <span className="text-grey-800 font-medium">{selectedApp.app_name}</span> selected. Run analysis to generate findings.
           </p>
           <button
             onClick={analyzeApp}
             disabled={isAnalyzing}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-medium mx-auto disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-emerald-50 rounded-lg text-sm font-medium mx-auto disabled:opacity-50"
           >
             <Play size={14} />
             Analyze Application
