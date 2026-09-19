@@ -1,37 +1,39 @@
 # LegacyMind AI
 
-> **"Understand what exists. Prove what matters. Modernize with confidence."**
+LegacyMind AI is an agent-style application modernization workspace for understanding and improving legacy systems. It turns application discovery data into evidence-based analysis, documentation, dependency maps, test insights, risk summaries, and modernization recommendations.
 
-An AI-powered legacy application modernization workspace. Turns opaque legacy discovery data into evidence-backed understanding, documentation, dependency maps, parity tests, and risk-aware modernization recommendations.
+The product is built around a simple principle: understand the existing system before deciding how to replace or modernize it.
 
-**Core principle: PROVE BEFORE YOU REPLACE.**
+## What the application does
 
----
+LegacyMind AI helps teams:
 
-## Quick Start
+- Import application discovery data from an Excel workbook.
+- Select and analyze individual applications.
+- Identify critical findings, high-complexity modules, continuity risks, and test coverage gaps.
+- Explore application structure, dependencies, cycles, and orphaned records.
+- Generate functional documentation and process flows.
+- Review parity test results and untested business rules.
+- Ask questions through an AI assistant grounded in the selected application's analysis.
+- Review evidence and traceability for findings, tests, and recommendations.
+- Convert analysis into prioritized modernization recommendations and a NOW/NEXT/LATER roadmap.
 
-### Prerequisites
+The analysis engine uses deterministic rules for dataset-based findings. The AI service adds summaries, insights, assistant responses, and other contextual guidance based on the imported data.
 
-| Tool | Version | Install |
-|------|---------|---------|
-| Node.js | 22.5+ | [nvm](https://github.com/nvm-sh/nvm) |
+## Requirements
 
-### 1. Clone & start
+- Node.js 22.5 or later. The backend uses Node's built-in SQLite support.
+- npm.
+- Access to the VW LLMaaS API and the required credentials. AI configuration is required for the application.
 
-```bash
-# From the project root
-chmod +x start.sh
-./start.sh
-```
+## Installation
 
-Then open **http://localhost:5173** in your browser.
-
-### 2. Manual start (two terminals)
+From the repository root, install all workspace dependencies:
 
 **Terminal 1 — Backend:**
 ```bash
 cd apps/server
-npm install
+npm install (if this not works then run- npm install --no-package-lock)
 npm run dev
 ```
 
@@ -42,136 +44,162 @@ npm install --no-package-lock
 npm run dev
 ```
 
-Open **http://localhost:5173**
+The repository uses npm workspaces for the server, web application, and shared package.
 
----
+## Required AI configuration
 
-## Demo Flow
+Create a file named `.env` in `apps/server` and add the LLMaaS configuration supplied for your environment:
 
-1. Click **Import Dataset** (top bar) — select any XLSX discovery dataset from your device (e.g. `LegacyMind_Mock_Dataset.xlsx`)
-2. Select an application from the dropdown
-3. Click **Analyze Application**
-4. Navigate through:
-   - **Overview** — dataset summary, critical findings, top recommendations
-   - **Understand** — app profile, modules, business rules, findings
-   - **Dependencies** — interactive graph, cycle detection, orphan detection
-   - **Documents** — Functional Documentation + Process Flow (Mermaid)
-   - **Tests** — parity results, PASS/MISMATCH/UNKNOWN, untested critical rules
-   - **Modernize** — prioritized recommendations with NOW/NEXT/LATER roadmap
-   - **Risks** — grouped findings by Security/Continuity/Dependency/Testing/etc.
-   - **Traceability** — every finding/recommendation/test traced to source records
-  - **AI Assistant** — project-aware chat grounded in the selected analysis
-
----
-
-## VW LLMaaS AI (Optional)
-
-Add the server-only configuration to `apps/server/.env`:
-
-```
+```env
 AI_PROVIDER=llmaas
-LLMAAS_CLIENT_ID=
-LLMAAS_CLIENT_SECRET=
-LLMAAS_API_KEY=
+LLMAAS_CLIENT_ID=your-client-id
+LLMAAS_CLIENT_SECRET=your-client-secret
+LLMAAS_API_KEY=your-api-key
 LLMAAS_TOKEN_URL=https://idp.cloud.vwgroup.com/auth/realms/kums-mfa/protocol/openid-connect/token
 LLMAAS_BASE_URL=https://llmapi.ai.vwgroup.com
 LLMAAS_MODEL=gpt-4o
 LLMAAS_EMBEDDING_MODEL=text-embedding-3-large
-```
-
-Without LLMaaS credentials, all deterministic analysis still works and AI panels show a graceful unavailable state. Credentials and OAuth tokens remain server-side.
-
----
-
-## Architecture
-
-```
-apps/
-  server/          Node.js + Express backend
-    src/
-      analysis/    Deterministic engine (cycles, orphans, parity, risk scoring)
-      ai/          AIProvider, LLMAASProvider, OAuth token service, evidence context, cache, chat
-      db/          SQLite via Node.js built-in node:sqlite
-      routes/      /api/workbook, /api/analysis, /api/ai
-      services/    XLSX importer, documentation generator
-      tests/       22 unit tests
-
-  web/             React + Vite + Tailwind frontend
-    src/
-      api/         HTTP client
-      components/  Layout, shared UI
-      hooks/       useApp context (state management)
-      pages/       Dashboard, Understand, Dependencies, Documents,
-           Tests, Modernize, Risks, Traceability, Assistant
-      types/       Shared TypeScript types
-
-  desktop/         Electron wrapper (main.js + preload.js)
-
-packages/
-  shared/          Domain types (Application, Module, Finding, etc.)
-
-LegacyMind_Mock_Dataset.xlsx   Sample dataset for local development (any compatible XLSX can be uploaded)
-```
-
----
-
-## What's Detected Automatically
-
-All findings are **deterministic** — derived from the dataset, never hardcoded:
-
-| Finding | Detection Method |
-|---------|-----------------|
-| Circular dependencies | DFS graph traversal |
-| Orphan dependencies | Target ID resolution against module inventory |
-| Critical rules without tests | has_test_case=N + criticality filter |
-| Parity mismatches | expected_result ≠ legacy_result |
-| Dead code modules | is_dead_code=Y flag |
-| Duplicate business logic | duplicate_of field |
-| PII data stores | pii_present=Y flag |
-| Orphan data stores | owning_app_id not in Applications |
-| Continuity risks | preserves_continuity=N in backlog |
-| Retired integrations | Active status + retired downstream target |
-
----
-
-## Running Tests
-
-```bash
-cd apps/server
-npm test
-```
-
-22 tests covering: XLSX parsing, normalization, relationship resolution, cycle detection, orphan detection, parity evaluation, risk scoring, traceability, AI context bounds, redaction, caching, OAuth token reuse, LLMaaS headers, and refresh behavior.
-
----
-
-## Environment Variables
-
-`apps/server/.env`:
-
-```
-AI_PROVIDER=llmaas
-LLMAAS_CLIENT_ID=
-LLMAAS_CLIENT_SECRET=
-LLMAAS_API_KEY=
-LLMAAS_TOKEN_URL=https://idp.cloud.vwgroup.com/auth/realms/kums-mfa/protocol/openid-connect/token
-LLMAAS_BASE_URL=https://llmapi.ai.vwgroup.com
-LLMAAS_MODEL=gpt-4o
-LLMAAS_EMBEDDING_MODEL=text-embedding-3-large
-PORT=3001                # Backend port (default 3001)
+PORT=3001
 DB_PATH=./legacymind.db
 ```
 
-Datasets are uploaded from the UI at runtime — no fixed dataset path is required.
+The client ID, client secret, and API key must be valid for the LLMaaS environment. Do not commit `.env` files or expose these values in the frontend. The backend keeps credentials and OAuth access tokens server-side.
 
-**The API key is never sent to the frontend.**
+## Running the application
 
----
+### Windows and cross-platform startup
 
-## Data Integrity Guarantees
+From the repository root, run:
 
-- All displayed values derived from imported XLSX — no hardcoded counts or IDs
-- Every finding has `evidence[]` pointing to `{ sheet, recordId, field, value }`
-- Every recommendation has evidence references
-- AI-generated content is clearly labeled
-- Potential credential content in docs is masked, never echoed
+```bash
+npm run dev
+```
+
+This starts both services:
+
+- Web application: http://localhost:5173
+- Backend API: http://localhost:3001
+
+Open http://localhost:5173 in a browser.
+
+### Starting the services separately
+
+Backend:
+
+```bash
+cd apps/server
+npm run dev
+```
+
+Frontend, in a second terminal:
+
+```bash
+cd apps/web
+npm run dev
+```
+
+The `start.sh` script provides an equivalent combined startup flow for Linux and macOS environments with Bash. The Electron wrapper in `apps/desktop` is experimental and is not part of the supported application workflow.
+
+## Using the application
+
+1. Open the web application at http://localhost:5173.
+2. Use Import Dataset to upload an `.xlsx` discovery workbook.
+3. Select an application from the imported application list.
+4. Select Analyze Application to generate its profile and analysis.
+5. Review the available views:
+   - Overview: executive summary, key metrics, findings, and recommendations.
+   - Understand: application profile, modules, business rules, and findings.
+   - Dependencies: dependency graph, cycles, and orphan records.
+   - Documents: functional documentation and generated process flows.
+   - Tests: parity results, mismatches, and untested critical rules.
+   - Modernize: prioritized recommendations and roadmap phases.
+   - Risks: risks grouped by category and severity.
+   - Traceability: links from findings and recommendations to source records.
+   - AI Assistant: contextual questions and answers about the selected application.
+
+## Sample dataset
+
+The repository includes a synthetic workbook named `Legacy_Modernization_Synthetic_Dataset.xlsx` in the project root. It can be uploaded through the Import Dataset action and is intended for demonstrations, local development, and testing.
+
+The dataset is synthetic and does not represent a real customer system. Compatible discovery workbooks can also be uploaded at runtime; the application does not require a fixed dataset path.
+
+## Architecture
+
+```text
+apps/
+  server/                  Express and TypeScript backend
+    src/ai/                LLMaaS client, OAuth token service, and AI context
+    src/analysis/          Deterministic analysis engine
+    src/db/                Local SQLite persistence
+    src/routes/            Workbook, analysis, and AI API routes
+    src/services/          Importing, documentation, and Mermaid generation
+    src/tests/             Backend tests
+  web/                     React, Vite, and Tailwind frontend
+    src/api/               Backend API client
+    src/components/        Shared interface components
+    src/hooks/              Application state and data loading
+    src/pages/              Product views
+
+packages/
+  shared/                  Shared domain types
+
+Legacy_Modernization_Synthetic_Dataset.xlsx
+                         Synthetic sample discovery dataset
+```
+
+The backend exposes a health check at `GET /health` and serves the application API under `/api`.
+
+Imported workbooks and generated analysis results are stored in a local SQLite database. By default, the database is created as `legacymind.db` in the server working directory. Set `DB_PATH` to use a different location.
+
+## Analysis and traceability
+
+Dataset-based findings are calculated by the analysis engine rather than hardcoded into the interface. The engine checks areas including:
+
+- Circular and orphaned dependencies.
+- Critical business rules without test coverage.
+- Parity mismatches between expected and legacy results.
+- Dead code and duplicate business logic.
+- PII data stores and orphaned data stores.
+- Continuity risks and retired integrations.
+
+Findings and recommendations retain references to their source sheet and record. This allows users to verify why an item was identified and supports more defensible modernization decisions.
+
+## Development commands
+
+Run the complete development environment:
+
+```bash
+npm run dev
+```
+
+Build the backend and frontend:
+
+```bash
+npm run build
+```
+
+Run type checks:
+
+```bash
+npm run typecheck
+```
+
+Run backend tests:
+
+```bash
+npm test
+```
+
+The backend test suite covers workbook parsing and normalization, relationship resolution, dependency analysis, parity evaluation, risk scoring, traceability, AI context handling, credential redaction, caching, OAuth token reuse, and LLMaaS request behavior.
+
+## Security and data handling
+
+- LLMaaS credentials and access tokens remain on the server.
+- The frontend communicates with the backend through the `/api` routes.
+- AI context is built from the selected application's imported evidence.
+- Potential credential content in generated documentation is masked.
+- The included workbook is synthetic and should only be used as demonstration data.
+
+## Repository structure
+
+The main supported product is the web application and its backend under `apps/web` and `apps/server`. The shared package contains common domain types. The desktop directory contains an incomplete Electron wrapper and should not be used as the primary way to run the project.
