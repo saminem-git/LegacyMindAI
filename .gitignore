@@ -6,4 +6,3 @@ dist/
 *.log
 apps/desktop/node_modules/
 apps/desktop/dist/
-*.xlsx
